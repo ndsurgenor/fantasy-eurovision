@@ -1,0 +1,262 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+class ContestController extends BaseController
+{
+    public function index(): void
+    {
+        $pdo     = getDB();
+        $contest = $pdo->query('SELECT * FROM contests ORDER BY id DESC LIMIT 1')->fetch();
+
+        if (!$contest) {
+            if (isAdmin()) {
+                $this->redirect('/admin/contest');
+            } else {
+                $this->render('coming-soon.twig', [
+                    'message' => 'No contest has been set up yet. Check back soon!',
+                ]);
+            }
+            return;
+        }
+
+        if ($contest['status'] === 'setup') {
+            if (isAdmin()) {
+                $this->redirect('/admin');
+            } else {
+                $this->render('coming-soon.twig', [
+                    'message' => 'The contest is being set up. Check back soon!',
+                ]);
+            }
+            return;
+        }
+
+        if (!isLoggedIn()) {
+            $this->redirect('/login');
+            return;
+        }
+
+        $userId = (int) $_SESSION['user_id'];
+
+        switch ($contest['status']) {
+            case 'open':
+                $stmt = $pdo->prepare('SELECT id FROM entries WHERE user_id = ? AND contest_id = ?');
+                $stmt->execute([$userId, (int) $contest['id']]);
+                $this->redirect($stmt->fetch() ? '/my-team' : '/select');
+                break;
+            case 'locked':
+                $stmt = $pdo->prepare('SELECT id FROM entries WHERE user_id = ? AND contest_id = ?');
+                $stmt->execute([$userId, (int) $contest['id']]);
+                if ($stmt->fetch()) {
+                    $this->redirect('/my-team');
+                } else {
+                    $this->render('coming-soon.twig', [
+                        'message' => 'The contest is now locked. Results will be available soon!',
+                    ]);
+                }
+                break;
+            case 'scored':
+                $this->redirect('/leaderboard');
+                break;
+            default:
+                $this->redirect('/login');
+        }
+    }
+
+    public function selectForm(): void
+    {
+        requireLogin();
+
+        $pdo     = getDB();
+        $contest = $pdo->query('SELECT * FROM contests ORDER BY id DESC LIMIT 1')->fetch();
+
+        if (!$contest || $contest['status'] !== 'open') {
+            $this->redirect('/');
+            return;
+        }
+
+        $stmt = $pdo->prepare('SELECT id FROM entries WHERE user_id = ? AND contest_id = ?');
+        $stmt->execute([(int) $_SESSION['user_id'], (int) $contest['id']]);
+        if ($stmt->fetch()) {
+            $this->redirect('/my-team');
+            return;
+        }
+
+        [$groups, $countriesByGroup] = $this->loadGroupsAndCountries($pdo, (int) $contest['id']);
+
+        $this->render('contest/select.twig', [
+            'groups'             => $groups,
+            'countries_by_group' => $countriesByGroup,
+            'checked_ids'        => [],
+            'errors'             => [],
+        ]);
+    }
+
+    public function submitSelect(): void
+    {
+        requireLogin();
+
+        $pdo     = getDB();
+        $contest = $pdo->query('SELECT * FROM contests ORDER BY id DESC LIMIT 1')->fetch();
+
+        if (!$contest || $contest['status'] !== 'open') {
+            $this->redirect('/');
+            return;
+        }
+
+        $stmt = $pdo->prepare('SELECT id FROM entries WHERE user_id = ? AND contest_id = ?');
+        $stmt->execute([(int) $_SESSION['user_id'], (int) $contest['id']]);
+        if ($stmt->fetch()) {
+            $this->redirect('/my-team');
+            return;
+        }
+
+        [$groups, $countriesByGroup] = $this->loadGroupsAndCountries($pdo, (int) $contest['id']);
+
+        $checkedIds = array_map('intval', (array) ($_POST['countries'] ?? []));
+
+        $picks = [];
+        if (!empty($checkedIds)) {
+            $placeholders = implode(',', array_fill(0, count($checkedIds), '?'));
+            $stmt = $pdo->prepare("SELECT * FROM countries WHERE id IN ($placeholders) AND contest_id = ?");
+            $stmt->execute([...$checkedIds, (int) $contest['id']]);
+            $picks = $stmt->fetchAll();
+        }
+
+        $errors = validateEntry($picks, $groups, (float) $contest['budget_limit']);
+
+        if (!empty($errors)) {
+            $this->render('contest/select.twig', [
+                'groups'             => $groups,
+                'countries_by_group' => $countriesByGroup,
+                'checked_ids'        => $checkedIds,
+                'errors'             => $errors,
+            ]);
+            return;
+        }
+
+        $totalCost = (float) array_sum(array_column($picks, 'price'));
+
+        $pdo->beginTransaction();
+        try {
+            $stmt = $pdo->prepare(
+                'INSERT INTO entries (user_id, contest_id, submitted_at, total_cost, total_score) VALUES (?, ?, NOW(), ?, 0)'
+            );
+            $stmt->execute([(int) $_SESSION['user_id'], (int) $contest['id'], $totalCost]);
+            $entryId = (int) $pdo->lastInsertId();
+
+            $stmt = $pdo->prepare('INSERT INTO entry_countries (entry_id, country_id) VALUES (?, ?)');
+            foreach ($picks as $pick) {
+                $stmt->execute([$entryId, (int) $pick['id']]);
+            }
+            $pdo->commit();
+        } catch (\Exception $e) {
+            $pdo->rollBack();
+            $this->render('contest/select.twig', [
+                'groups'             => $groups,
+                'countries_by_group' => $countriesByGroup,
+                'checked_ids'        => $checkedIds,
+                'errors'             => ['Something went wrong saving your entry. Please try again.'],
+            ]);
+            return;
+        }
+
+        $this->flash('success', 'Your team has been submitted!');
+        $this->redirect('/my-team');
+    }
+
+    public function myTeam(): void
+    {
+        requireLogin();
+
+        $pdo     = getDB();
+        $contest = $pdo->query('SELECT * FROM contests ORDER BY id DESC LIMIT 1')->fetch();
+
+        if (!$contest || $contest['status'] === 'setup') {
+            $this->redirect('/');
+            return;
+        }
+
+        $stmt = $pdo->prepare('SELECT * FROM entries WHERE user_id = ? AND contest_id = ?');
+        $stmt->execute([(int) $_SESSION['user_id'], (int) $contest['id']]);
+        $entry = $stmt->fetch();
+
+        if (!$entry) {
+            $this->redirect($contest['status'] === 'open' ? '/select' : '/');
+            return;
+        }
+
+        $stmt = $pdo->prepare(
+            'SELECT c.name, c.flag_emoji, c.price, c.final_score_raw, c.running_order,
+                    cg.name AS group_name
+               FROM entry_countries ec
+               JOIN countries c       ON c.id  = ec.country_id
+               JOIN contest_groups cg ON cg.id = c.group_id
+              WHERE ec.entry_id = ?
+              ORDER BY cg.sort_order, c.running_order, c.name'
+        );
+        $stmt->execute([(int) $entry['id']]);
+        $rawPicks = $stmt->fetchAll();
+
+        $picks = array_map(function (array $pick): array {
+            $pick['score'] = calculateScore(
+                $pick['final_score_raw'] !== null ? (int) $pick['final_score_raw'] : null
+            );
+            return $pick;
+        }, $rawPicks);
+
+        $this->render('contest/my-team.twig', [
+            'entry'       => $entry,
+            'picks'       => $picks,
+            'total_score' => array_sum(array_column($picks, 'score')),
+            'is_scored'   => $contest['status'] === 'scored',
+            'is_locked'   => $contest['status'] === 'locked',
+        ]);
+    }
+
+    public function leaderboard(): void
+    {
+        requireLogin();
+
+        $pdo     = getDB();
+        $contest = $pdo->query('SELECT * FROM contests ORDER BY id DESC LIMIT 1')->fetch();
+
+        if (!$contest || !in_array($contest['status'], ['locked', 'scored'], true)) {
+            $this->redirect('/');
+            return;
+        }
+
+        $stmt = $pdo->prepare(
+            'SELECT u.name, u.id AS user_id, e.total_score, e.total_cost
+               FROM entries e
+               JOIN users u ON u.id = e.user_id
+              WHERE e.contest_id = ?
+              ORDER BY e.total_score DESC, e.total_cost ASC'
+        );
+        $stmt->execute([(int) $contest['id']]);
+
+        $this->render('contest/leaderboard.twig', [
+            'entries'         => $stmt->fetchAll(),
+            'is_scored'       => $contest['status'] === 'scored',
+            'current_user_id' => (int) $_SESSION['user_id'],
+        ]);
+    }
+
+    private function loadGroupsAndCountries(\PDO $pdo, int $contestId): array
+    {
+        $stmt = $pdo->prepare('SELECT * FROM contest_groups WHERE contest_id = ? ORDER BY sort_order');
+        $stmt->execute([$contestId]);
+        $groups = $stmt->fetchAll();
+
+        $stmt = $pdo->prepare('SELECT * FROM countries WHERE contest_id = ? ORDER BY running_order, name');
+        $stmt->execute([$contestId]);
+        $countriesByGroup = [];
+        foreach ($stmt->fetchAll() as $c) {
+            $countriesByGroup[$c['group_id']][] = $c;
+        }
+
+        return [$groups, $countriesByGroup];
+    }
+}

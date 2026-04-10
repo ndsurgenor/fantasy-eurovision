@@ -1,0 +1,21 @@
+{
+  "name": "fantasy-eurovision",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "dev":   "npx @tailwindcss/cli -i ./src/app.css -o ./public/css/app.css --watch",
+    "build": "npx @tailwindcss/cli -i ./src/app.css -o ./public/css/app.css --minify",
+    "php":   "php -S fantasyeurovision.test:8000 -t public/ router.php",
+    "start": "concurrently --names \"php,css\" --prefix-colors \"cyan,yellow\" \"npm run php\" \"npm run dev\"",
+    "view":  "concurrently --names \"php,css,browser\" --prefix-colors \"cyan,yellow,green\" \"npm run php\" \"npm run dev\" \"node scripts/open-browser.js\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.2",
+    "concurrently": "^9.2.1",
+    "tailwindcss": "^4.2.2"
+  }
+}

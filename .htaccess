@@ -1,0 +1,11 @@
+# For shared/Apache hosting where the document root cannot be set to public/
+# Routes all non-file, non-directory requests through the front controller
+
+RewriteEngine On
+
+# If request is for an actual file or directory in public/, serve it directly
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Route everything else through the front controller
+RewriteRule ^(.*)$ public/index.php [L,QSA]

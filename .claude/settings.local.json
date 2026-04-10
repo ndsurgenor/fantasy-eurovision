@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(npx @tailwindcss/cli -i ./src/app.css -o ./public/css/app.css)",
+      "Bash(composer install:*)",
+      "Bash(composer config:*)",
+      "Bash(php:*)",
+      "Bash(cp /c/Tools/php/php.ini-development /c/Tools/php/php.ini)",
+      "Bash(sed -i 's/;extension=openssl/extension=openssl/' /c/Tools/php/php.ini)",
+      "Bash(powershell:*)",
+      "Bash(/c/Tools/php/php.exe:*)",
+      "Bash(composer --version)",
+      "Bash(where composer:*)",
+      "Bash(composer require:*)",
+      "Bash(COMPOSER_DISABLE_XDEBUG_WARN=1 composer require:*)",
+      "Bash(COMPOSER_DISABLE_XDEBUG_WARN=1 COMPOSER_ALLOW_SUPERUSER=1 composer config --global disable-tls true)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

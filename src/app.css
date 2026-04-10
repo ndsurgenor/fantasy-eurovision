@@ -1,0 +1,4 @@
+@import "tailwindcss";
+
+@source "../app/templates/**/*.twig";
+@source "../public/js/**/*.js";

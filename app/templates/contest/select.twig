@@ -1,0 +1,86 @@
+{% extends 'base.twig' %}
+
+{% block title %}Pick Your Team — {{ site_name }}{% endblock %}
+
+{% block content %}
+    <h1 class="text-3xl font-bold text-yellow-400 mb-2">Pick Your Team</h1>
+    <p class="text-indigo-300 mb-6">Choose 8 countries within your budget. You must pick at least 1 from each group (max 2 per group).</p>
+
+    {% if errors is defined and errors %}
+        <div class="bg-red-900 border border-red-600 rounded-lg px-4 py-3 mb-6">
+            {% for error in errors %}
+                <p class="text-red-200 text-sm">{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" action="/select" id="pick-form"
+          data-budget="{{ contest.budget_limit }}"
+          data-required-picks="8">
+
+        {# Budget / picks tracker #}
+        <div class="bg-indigo-900 border border-indigo-700 rounded-xl p-4 mb-6 flex flex-wrap gap-6 text-sm">
+            <div>
+                <span class="text-indigo-400">Picks:</span>
+                <span id="picks-count" class="font-bold text-white ml-1">0</span>
+                <span class="text-indigo-400"> / 8</span>
+            </div>
+            <div>
+                <span class="text-indigo-400">Budget:</span>
+                <span class="text-indigo-300 ml-1">€{{ contest.budget_limit|number_format(1) }}m</span>
+            </div>
+            <div>
+                <span class="text-indigo-400">Spent:</span>
+                <span id="budget-spent" class="font-bold text-white ml-1">€0.0m</span>
+            </div>
+            <div>
+                <span class="text-indigo-400">Remaining:</span>
+                <span id="budget-remaining" class="font-bold text-white ml-1">€{{ contest.budget_limit|number_format(1) }}m</span>
+            </div>
+        </div>
+
+        {# Groups & countries #}
+        {% for group in groups %}
+            <div class="mb-6">
+                <div class="flex items-center gap-3 mb-3">
+                    <h2 class="text-lg font-semibold text-yellow-300">{{ group.name }}</h2>
+                    {% if group.is_wildcard %}
+                        <span class="text-xs bg-yellow-500 text-indigo-950 font-bold px-2 py-0.5 rounded-full">Wildcard (optional)</span>
+                    {% else %}
+                        <span class="text-xs text-indigo-400">
+                            Picks: <span data-group-display="{{ group.id }}" class="font-semibold text-white">0</span> / 2
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {% for country in countries_by_group[group.id] ?? [] %}
+                        <label class="flex items-center gap-3 bg-indigo-900 border border-indigo-700 rounded-lg p-3 cursor-pointer hover:border-yellow-400 transition has-[:checked]:border-yellow-400 has-[:checked]:bg-indigo-800">
+                            <input type="checkbox"
+                                   name="countries[]"
+                                   value="{{ country.id }}"
+                                   data-price="{{ country.price }}"
+                                   data-group-id="{{ country.group_id }}"
+                                   {% if country.id in checked_ids %}checked{% endif %}
+                                   class="accent-yellow-400 w-4 h-4 flex-shrink-0">
+                            <span class="text-2xl">{{ country.flag_emoji }}</span>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-medium text-white text-sm truncate">{{ country.name }}</p>
+                                <p class="text-indigo-400 text-xs">€{{ country.price|number_format(1) }}m</p>
+                            </div>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="mt-6">
+            <button type="submit" id="submit-btn" disabled
+                    class="bg-yellow-400 hover:bg-yellow-300 disabled:opacity-40 disabled:cursor-not-allowed text-indigo-950 font-bold py-3 px-8 rounded-lg transition text-base">
+                Submit My Team
+            </button>
+        </div>
+    </form>
+
+    <script src="/js/select.js"></script>
+{% endblock %}

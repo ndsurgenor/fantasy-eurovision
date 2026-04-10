@@ -1,0 +1,103 @@
+{% extends 'admin/base.twig' %}
+
+{% block page_title %}Groups{% endblock %}
+
+{% block content %}
+    {% if errors is defined and errors %}
+        <div class="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-6">
+            {% for error in errors %}
+                <p class="text-red-700 text-sm">{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        {# Form #}
+        <div>
+            <h2 class="text-base font-semibold text-gray-700 mb-3">
+                {{ edit_group ? 'Edit Group' : 'Add Group' }}
+            </h2>
+
+            <form method="POST" action="/admin/groups"
+                  class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-4">
+
+                <input type="hidden" name="action" value="{{ edit_group ? 'edit' : 'create' }}">
+                {% if edit_group %}
+                    <input type="hidden" name="group_id" value="{{ edit_group.id }}">
+                {% endif %}
+
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Group Name</label>
+                    <input type="text" id="name" name="name"
+                           value="{{ edit_group.name ?? '' }}"
+                           required
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                </div>
+
+                <div>
+                    <label for="sort_order" class="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
+                    <input type="number" id="sort_order" name="sort_order"
+                           value="{{ edit_group.sort_order ?? 0 }}"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                </div>
+
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="is_wildcard" value="1"
+                           {% if edit_group.is_wildcard is defined and edit_group.is_wildcard %}checked{% endif %}
+                           class="w-4 h-4 text-indigo-600 rounded border-gray-300">
+                    <span class="text-sm text-gray-700">Wildcard group (optional, max 1 pick)</span>
+                </label>
+
+                <div class="flex gap-3 pt-1">
+                    <button type="submit"
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-lg transition text-sm">
+                        {{ edit_group ? 'Update Group' : 'Add Group' }}
+                    </button>
+                    {% if edit_group %}
+                        <a href="/admin/groups"
+                           class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-5 rounded-lg transition text-sm flex items-center">
+                            Cancel
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
+        {# Groups list #}
+        <div>
+            <h2 class="text-base font-semibold text-gray-700 mb-3">Current Groups</h2>
+
+            {% if groups %}
+                <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                    <ul class="divide-y divide-gray-100">
+                        {% for group in groups %}
+                            <li class="flex items-center justify-between px-4 py-3">
+                                <div>
+                                    <span class="font-medium text-gray-800 text-sm">{{ group.name }}</span>
+                                    {% if group.is_wildcard %}
+                                        <span class="ml-2 text-xs bg-amber-100 text-amber-700 font-semibold px-2 py-0.5 rounded-full">Wildcard</span>
+                                    {% endif %}
+                                    <span class="text-gray-400 text-xs ml-2">order: {{ group.sort_order }}</span>
+                                </div>
+                                <div class="flex gap-3">
+                                    <a href="/admin/groups?edit={{ group.id }}"
+                                       class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Edit</a>
+                                    <form method="POST" action="/admin/groups"
+                                          onsubmit="return confirm('Delete this group?')">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="group_id" value="{{ group.id }}">
+                                        <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-medium">Delete</button>
+                                    </form>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <p class="text-gray-400 text-sm">No groups yet. Add one to get started.</p>
+            {% endif %}
+        </div>
+
+    </div>
+{% endblock %}

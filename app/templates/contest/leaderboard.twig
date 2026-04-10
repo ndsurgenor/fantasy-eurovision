@@ -1,0 +1,56 @@
+{% extends 'base.twig' %}
+
+{% block title %}Leaderboard — {{ site_name }}{% endblock %}
+
+{% block content %}
+    <h1 class="text-3xl font-bold text-yellow-400 mb-2">Leaderboard</h1>
+
+    {% if not is_scored %}
+        <p class="text-indigo-400 text-sm mb-6">Scores will appear here once the contest has been scored.</p>
+    {% else %}
+        <p class="text-indigo-400 text-sm mb-6">Final standings — ranked by score, then by cost (lower is better).</p>
+    {% endif %}
+
+    <div class="bg-indigo-900 border border-indigo-700 rounded-xl overflow-hidden">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="bg-indigo-800 text-indigo-300 text-xs uppercase tracking-wide">
+                    <th class="px-4 py-3 text-left w-10">#</th>
+                    <th class="px-4 py-3 text-left">Player</th>
+                    <th class="px-4 py-3 text-right hidden sm:table-cell">Cost</th>
+                    {% if is_scored %}
+                        <th class="px-4 py-3 text-right">Score</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-indigo-800">
+                {% for entry in entries %}
+                    <tr class="{% if entry.user_id == current_user_id %}bg-indigo-800 font-semibold{% else %}hover:bg-indigo-800{% endif %} transition">
+                        <td class="px-4 py-3 text-indigo-400">
+                            {% if loop.index == 1 and is_scored %}🥇
+                            {% elseif loop.index == 2 and is_scored %}🥈
+                            {% elseif loop.index == 3 and is_scored %}🥉
+                            {% else %}{{ loop.index }}{% endif %}
+                        </td>
+                        <td class="px-4 py-3">
+                            {{ entry.name }}
+                            {% if entry.user_id == current_user_id %}
+                                <span class="text-xs text-yellow-400 ml-1">(you)</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-right text-indigo-300 hidden sm:table-cell">
+                            €{{ entry.total_cost|number_format(1) }}m
+                        </td>
+                        {% if is_scored %}
+                            <td class="px-4 py-3 text-right font-bold text-yellow-400">{{ entry.total_score }}</td>
+                        {% endif %}
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="px-4 py-8 text-center text-indigo-400">No entries yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
