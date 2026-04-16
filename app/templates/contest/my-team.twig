@@ -4,20 +4,20 @@
 
 {% block content %}
     <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold text-yellow-400">My Team</h1>
+        <h1 class="text-3xl font-bold text-white tracking-tight">My Team</h1>
         {% if is_scored %}
-            <span class="bg-green-700 text-green-100 text-sm font-semibold px-3 py-1 rounded-full">Scored</span>
+            <span class="bg-emerald-400/20 text-emerald-400 text-sm font-semibold px-3 py-1 rounded-full">Scored</span>
         {% elseif is_locked %}
-            <span class="bg-yellow-700 text-yellow-100 text-sm font-semibold px-3 py-1 rounded-full">Locked</span>
+            <span class="bg-fuchsia-500/20 text-fuchsia-400 text-sm font-semibold px-3 py-1 rounded-full">Locked</span>
         {% else %}
-            <span class="bg-indigo-700 text-indigo-200 text-sm font-semibold px-3 py-1 rounded-full">Open</span>
+            <span class="bg-white/10 text-white/60 text-sm font-semibold px-3 py-1 rounded-full">Open</span>
         {% endif %}
     </div>
 
-    <div class="bg-indigo-900 border border-indigo-700 rounded-xl overflow-hidden mb-6">
+    <div class="bg-stage-900 border border-white/10 rounded-xl overflow-hidden mb-6">
         <table class="w-full text-sm">
             <thead>
-                <tr class="bg-indigo-800 text-indigo-300 text-xs uppercase tracking-wide">
+                <tr class="bg-white/5 text-white/40 text-xs uppercase tracking-wider">
                     <th class="px-4 py-3 text-left">Country</th>
                     <th class="px-4 py-3 text-left hidden sm:table-cell">Group</th>
                     <th class="px-4 py-3 text-right hidden sm:table-cell">Price</th>
@@ -27,17 +27,17 @@
                     {% endif %}
                 </tr>
             </thead>
-            <tbody class="divide-y divide-indigo-800">
+            <tbody class="divide-y divide-white/10">
                 {% for pick in picks %}
-                    <tr class="hover:bg-indigo-800 transition">
-                        <td class="px-4 py-3 font-medium">
+                    <tr class="hover:bg-white/5 transition">
+                        <td class="px-4 py-3 font-medium text-white">
                             <span class="text-xl mr-2">{{ pick.flag_emoji }}</span>
                             {{ pick.name }}
                         </td>
-                        <td class="px-4 py-3 text-indigo-300 hidden sm:table-cell">{{ pick.group_name }}</td>
-                        <td class="px-4 py-3 text-right text-indigo-300 hidden sm:table-cell">€{{ pick.price|number_format(1) }}m</td>
+                        <td class="px-4 py-3 text-white/50 hidden sm:table-cell">{{ pick.group_name }}</td>
+                        <td class="px-4 py-3 text-right text-white/50 hidden sm:table-cell">€{{ pick.price|number_format(1) }}m</td>
                         {% if is_scored %}
-                            <td class="px-4 py-3 text-right text-indigo-300">
+                            <td class="px-4 py-3 text-right text-white/50">
                                 {% if pick.final_score_raw is not null %}
                                     {{ pick.final_score_raw }}
                                 {% else %}
@@ -45,9 +45,9 @@
                                 {% endif %}
                             </td>
                             <td class="px-4 py-3 text-right font-bold
-                                {% if pick.score > 0 %}text-green-400
-                                {% elseif pick.score < 0 %}text-red-400
-                                {% else %}text-indigo-400{% endif %}">
+                                {% if pick.score > 0 %}text-emerald-400
+                                {% elseif pick.score < 0 %}text-rose-400
+                                {% else %}text-white/30{% endif %}">
                                 {{ pick.score > 0 ? '+' : '' }}{{ pick.score }}
                             </td>
                         {% endif %}
@@ -56,21 +56,21 @@
             </tbody>
             {% if is_scored %}
                 <tfoot>
-                    <tr class="bg-indigo-800 font-bold">
-                        <td class="px-4 py-3" colspan="{% if is_scored %}3{% else %}2{% endif %}">Total</td>
+                    <tr class="bg-white/5 font-bold">
+                        <td class="px-4 py-3 text-white/60" colspan="{% if is_scored %}3{% else %}2{% endif %}">Total</td>
                         <td class="px-4 py-3 text-right"></td>
-                        <td class="px-4 py-3 text-right text-yellow-400 text-base">{{ total_score }}</td>
+                        <td class="px-4 py-3 text-right text-emerald-400 text-base">{{ total_score }}</td>
                     </tr>
                 </tfoot>
             {% endif %}
         </table>
     </div>
 
-    <div class="flex flex-wrap gap-4 text-sm text-indigo-300">
+    <div class="flex flex-wrap gap-4 text-sm text-white/50">
         <span>Budget spent: <strong class="text-white">€{{ entry.total_cost|number_format(1) }}m</strong></span>
         {% if is_scored %}
-            <span>Total score: <strong class="text-yellow-400">{{ total_score }}</strong></span>
-            <a href="/leaderboard" class="text-yellow-400 hover:underline font-semibold">View Leaderboard →</a>
+            <span>Total score: <strong class="text-emerald-400">{{ total_score }}</strong></span>
+            <a href="/leaderboard" class="text-fuchsia-400 hover:text-fuchsia-300 hover:underline font-semibold">View Leaderboard →</a>
         {% endif %}
     </div>
 {% endblock %}

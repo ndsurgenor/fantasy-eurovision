@@ -3,18 +3,18 @@
 {% block title %}Leaderboard — {{ site_name }}{% endblock %}
 
 {% block content %}
-    <h1 class="text-3xl font-bold text-yellow-400 mb-2">Leaderboard</h1>
+    <h1 class="text-3xl font-bold text-white mb-2 tracking-tight">Leaderboard</h1>
 
     {% if not is_scored %}
-        <p class="text-indigo-400 text-sm mb-6">Scores will appear here once the contest has been scored.</p>
+        <p class="text-white/50 text-sm mb-6">Scores will appear here once the contest has been scored.</p>
     {% else %}
-        <p class="text-indigo-400 text-sm mb-6">Final standings — ranked by score, then by cost (lower is better).</p>
+        <p class="text-white/50 text-sm mb-6">Final standings — ranked by score, then by cost (lower is better).</p>
     {% endif %}
 
-    <div class="bg-indigo-900 border border-indigo-700 rounded-xl overflow-hidden">
+    <div class="bg-stage-900 border border-white/10 rounded-xl overflow-hidden">
         <table class="w-full text-sm">
             <thead>
-                <tr class="bg-indigo-800 text-indigo-300 text-xs uppercase tracking-wide">
+                <tr class="bg-white/5 text-white/40 text-xs uppercase tracking-wider">
                     <th class="px-4 py-3 text-left w-10">#</th>
                     <th class="px-4 py-3 text-left">Player</th>
                     <th class="px-4 py-3 text-right hidden sm:table-cell">Cost</th>
@@ -23,31 +23,31 @@
                     {% endif %}
                 </tr>
             </thead>
-            <tbody class="divide-y divide-indigo-800">
+            <tbody class="divide-y divide-white/10">
                 {% for entry in entries %}
-                    <tr class="{% if entry.user_id == current_user_id %}bg-indigo-800 font-semibold{% else %}hover:bg-indigo-800{% endif %} transition">
-                        <td class="px-4 py-3 text-indigo-400">
+                    <tr class="{% if entry.user_id == current_user_id %}bg-fuchsia-500/10 font-semibold{% else %}hover:bg-white/5{% endif %} transition">
+                        <td class="px-4 py-3 text-white/40">
                             {% if loop.index == 1 and is_scored %}🥇
                             {% elseif loop.index == 2 and is_scored %}🥈
                             {% elseif loop.index == 3 and is_scored %}🥉
                             {% else %}{{ loop.index }}{% endif %}
                         </td>
-                        <td class="px-4 py-3">
+                        <td class="px-4 py-3 text-white">
                             {{ entry.name }}
                             {% if entry.user_id == current_user_id %}
-                                <span class="text-xs text-yellow-400 ml-1">(you)</span>
+                                <span class="text-xs text-fuchsia-400 ml-1">(you)</span>
                             {% endif %}
                         </td>
-                        <td class="px-4 py-3 text-right text-indigo-300 hidden sm:table-cell">
+                        <td class="px-4 py-3 text-right text-white/50 hidden sm:table-cell">
                             €{{ entry.total_cost|number_format(1) }}m
                         </td>
                         {% if is_scored %}
-                            <td class="px-4 py-3 text-right font-bold text-yellow-400">{{ entry.total_score }}</td>
+                            <td class="px-4 py-3 text-right font-bold text-emerald-400">{{ entry.total_score }}</td>
                         {% endif %}
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="4" class="px-4 py-8 text-center text-indigo-400">No entries yet.</td>
+                        <td colspan="4" class="px-4 py-8 text-center text-white/30">No entries yet.</td>
                     </tr>
                 {% endfor %}
             </tbody>

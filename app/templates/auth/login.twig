@@ -1,44 +1,44 @@
 {% extends 'base.twig' %}
 
-{% block title %}Log In — {{ site_name }}{% endblock %}
+{% block title %}Login | {{ site_name }}{% endblock %}
 
 {% block content %}
     <div class="max-w-md mx-auto">
-        <h1 class="text-3xl font-bold text-yellow-400 mb-8 text-center">Log In</h1>
+        <h1 class="text-3xl font-bold text-white mb-8 text-center tracking-tight">Log In</h1>
 
         {% if errors is defined and errors %}
-            <div class="bg-red-900 border border-red-600 rounded-lg px-4 py-3 mb-6">
+            <div class="bg-rose-500/20 border border-rose-500/40 rounded-lg px-4 py-3 mb-6">
                 {% for error in errors %}
-                    <p class="text-red-200 text-sm">{{ error }}</p>
+                    <p class="text-rose-300 text-sm">{{ error }}</p>
                 {% endfor %}
             </div>
         {% endif %}
 
-        <form method="POST" action="/login" class="bg-indigo-900 rounded-xl p-6 space-y-5 border border-indigo-700">
+        <form method="POST" action="/login" class="bg-stage-900 rounded-xl p-6 space-y-5 border border-white/10">
             <div>
-                <label for="email" class="block text-sm font-medium text-indigo-200 mb-1">Email</label>
+                <label for="email" class="block text-sm font-medium text-white/70 mb-1">Email</label>
                 <input type="email" id="email" name="email"
                        value="{{ email ?? '' }}"
                        required autocomplete="email"
-                       class="w-full bg-indigo-950 border border-indigo-600 rounded-lg px-3 py-2 text-white placeholder-indigo-400 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                       class="w-full bg-stage-950 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-fuchsia-500">
             </div>
 
             <div>
-                <label for="password" class="block text-sm font-medium text-indigo-200 mb-1">Password</label>
+                <label for="password" class="block text-sm font-medium text-white/70 mb-1">Password</label>
                 <input type="password" id="password" name="password"
                        required autocomplete="current-password"
-                       class="w-full bg-indigo-950 border border-indigo-600 rounded-lg px-3 py-2 text-white placeholder-indigo-400 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                       class="w-full bg-stage-950 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-fuchsia-500">
             </div>
 
             <button type="submit"
-                    class="w-full bg-yellow-400 hover:bg-yellow-300 text-indigo-950 font-bold py-2 px-4 rounded-lg transition">
+                    class="w-full bg-gradient-to-r from-fuchsia-500 to-purple-600 hover:from-fuchsia-400 hover:to-purple-500 text-white font-bold py-2 px-4 rounded-lg transition">
                 Log In
             </button>
         </form>
 
-        <p class="text-center text-indigo-400 text-sm mt-4">
+        <p class="text-center text-white/40 text-sm mt-4">
             Don't have an account?
-            <a href="/register" class="text-yellow-400 hover:underline">Register here</a>
+            <a href="/register" class="text-fuchsia-400 hover:text-fuchsia-300 hover:underline">Register here</a>
         </p>
     </div>
 {% endblock %}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-indigo-950 text-white">
+<html lang="en" class="bg-stage-950 text-white">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,50 +8,54 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <nav class="bg-indigo-900 border-b border-indigo-700 px-4 py-3">
+    <nav class="bg-stage-900 px-4 py-3">
         <div class="max-w-5xl mx-auto flex items-center justify-between">
-            <a href="/" class="text-yellow-400 font-bold text-xl tracking-wide">🎤 {{ site_name }}</a>
+            <a href="/" class="flex items-center gap-1.5 font-bold text-xl">
+                <span>🎤</span>
+                <span class="bg-gradient-to-r from-fuchsia-400 to-emerald-400 bg-clip-text text-transparent tracking-wide">{{ site_name }}</span>
+            </a>
 
             <div class="flex items-center gap-4 text-sm">
                 {% if is_logged_in %}
                     {% if is_admin %}
                         <a href="/admin"
-                           class="{% if current_path starts with '/admin' %}text-yellow-400 font-semibold{% else %}text-indigo-300 hover:text-white{% endif %}">
+                           class="{% if current_path starts with '/admin' %}text-fuchsia-400 font-semibold{% else %}text-white/60 hover:text-white{% endif %} transition">
                             CMS
                         </a>
                     {% else %}
                         <a href="/my-team"
-                           class="{% if current_path == '/my-team' %}text-yellow-400 font-semibold{% else %}text-indigo-300 hover:text-white{% endif %}">
+                           class="{% if current_path == '/my-team' %}text-fuchsia-400 font-semibold{% else %}text-white/60 hover:text-white{% endif %} transition">
                             My Team
                         </a>
                         {% if contest and contest.status in ['locked', 'scored'] %}
                             <a href="/leaderboard"
-                               class="{% if current_path == '/leaderboard' %}text-yellow-400 font-semibold{% else %}text-indigo-300 hover:text-white{% endif %}">
+                               class="{% if current_path == '/leaderboard' %}text-fuchsia-400 font-semibold{% else %}text-white/60 hover:text-white{% endif %} transition">
                                 Leaderboard
                             </a>
                         {% endif %}
                     {% endif %}
-                    <span class="text-indigo-400">{{ user_name }}</span>
-                    <a href="/logout" class="text-indigo-300 hover:text-white">Log out</a>
+                    <span class="text-white/40">{{ user_name }}</span>
+                    <a href="/logout" class="text-white/60 hover:text-white transition">Log out</a>
                 {% else %}
                     <a href="/login"
-                       class="{% if current_path == '/login' %}text-yellow-400 font-semibold{% else %}text-indigo-300 hover:text-white{% endif %}">
+                       class="{% if current_path == '/login' %}text-fuchsia-400 font-semibold{% else %}text-white/60 hover:text-white{% endif %} transition">
                         Log in
                     </a>
                     <a href="/register"
-                       class="{% if current_path == '/register' %}text-yellow-400 font-semibold{% else %}text-indigo-300 hover:text-white{% endif %}">
+                       class="{% if current_path == '/register' %}text-fuchsia-400 font-semibold{% else %}text-white/60 hover:text-white{% endif %} transition">
                         Register
                     </a>
                 {% endif %}
             </div>
         </div>
     </nav>
+    <div class="h-0.5 bg-gradient-to-r from-fuchsia-500 via-purple-400 to-emerald-500"></div>
 
     {% if flash %}
         <div class="max-w-5xl mx-auto w-full px-4 pt-4">
             <div class="rounded-lg px-4 py-3 text-sm font-medium
-                {% if flash.type == 'success' %}bg-green-800 text-green-100 border border-green-600
-                {% else %}bg-red-800 text-red-100 border border-red-600{% endif %}">
+                {% if flash.type == 'success' %}bg-emerald-500/20 border border-emerald-500/40 text-emerald-300
+                {% else %}bg-rose-500/20 border border-rose-500/40 text-rose-300{% endif %}">
                 {{ flash.message }}
             </div>
         </div>
@@ -61,7 +65,7 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-indigo-900 border-t border-indigo-700 text-center text-indigo-400 text-sm py-4">
+    <footer class="bg-stage-900 border-t border-white/10 text-center text-white/40 text-sm py-4">
         &copy; {{ current_year }} {{ site_name }}
     </footer>
 
