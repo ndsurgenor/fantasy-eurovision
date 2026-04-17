@@ -8,26 +8,14 @@ class ContestController extends BaseController
 {
     public function index(): void
     {
-        $pdo     = getDB();
-        $contest = $pdo->query('SELECT * FROM contests ORDER BY id DESC LIMIT 1')->fetch();
+        $contest = resolvePublicContest();
 
         if (!$contest) {
             if (isAdmin()) {
-                $this->redirect('/admin/contest');
+                $this->redirect('/admin/contests');
             } else {
                 $this->render('coming-soon.twig', [
                     'message' => 'No contest has been set up yet. Check back soon!',
-                ]);
-            }
-            return;
-        }
-
-        if ($contest['status'] === 'setup') {
-            if (isAdmin()) {
-                $this->redirect('/admin');
-            } else {
-                $this->render('coming-soon.twig', [
-                    'message' => 'The contest is being set up. Check back soon!',
                 ]);
             }
             return;
@@ -38,6 +26,7 @@ class ContestController extends BaseController
             return;
         }
 
+        $pdo    = getDB();
         $userId = (int) $_SESSION['user_id'];
 
         switch ($contest['status']) {
@@ -46,22 +35,26 @@ class ContestController extends BaseController
                 $stmt->execute([$userId, (int) $contest['id']]);
                 $this->redirect($stmt->fetch() ? '/my-team' : '/select');
                 break;
-            case 'locked':
+            case 'closed':
                 $stmt = $pdo->prepare('SELECT id FROM entries WHERE user_id = ? AND contest_id = ?');
                 $stmt->execute([$userId, (int) $contest['id']]);
                 if ($stmt->fetch()) {
                     $this->redirect('/my-team');
                 } else {
                     $this->render('coming-soon.twig', [
-                        'message' => 'The contest is now locked. Results will be available soon!',
+                        'message' => 'The contest is now closed. Results will be available soon!',
                     ]);
                 }
                 break;
-            case 'scored':
+            case 'finished':
                 $this->redirect('/leaderboard');
                 break;
             default:
-                $this->redirect('/login');
+                // setup status — should not normally be reached since resolvePublicContest
+                // only returns active contests, but guard just in case
+                $this->render('coming-soon.twig', [
+                    'message' => 'The contest is being set up. Check back soon!',
+                ]);
         }
     }
 
@@ -69,14 +62,14 @@ class ContestController extends BaseController
     {
         requireLogin();
 
-        $pdo     = getDB();
-        $contest = $pdo->query('SELECT * FROM contests ORDER BY id DESC LIMIT 1')->fetch();
+        $contest = resolvePublicContest();
 
         if (!$contest || $contest['status'] !== 'open') {
             $this->redirect('/');
             return;
         }
 
+        $pdo  = getDB();
         $stmt = $pdo->prepare('SELECT id FROM entries WHERE user_id = ? AND contest_id = ?');
         $stmt->execute([(int) $_SESSION['user_id'], (int) $contest['id']]);
         if ($stmt->fetch()) {
@@ -98,14 +91,14 @@ class ContestController extends BaseController
     {
         requireLogin();
 
-        $pdo     = getDB();
-        $contest = $pdo->query('SELECT * FROM contests ORDER BY id DESC LIMIT 1')->fetch();
+        $contest = resolvePublicContest();
 
         if (!$contest || $contest['status'] !== 'open') {
             $this->redirect('/');
             return;
         }
 
+        $pdo  = getDB();
         $stmt = $pdo->prepare('SELECT id FROM entries WHERE user_id = ? AND contest_id = ?');
         $stmt->execute([(int) $_SESSION['user_id'], (int) $contest['id']]);
         if ($stmt->fetch()) {
@@ -171,15 +164,15 @@ class ContestController extends BaseController
     {
         requireLogin();
 
-        $pdo     = getDB();
-        $contest = $pdo->query('SELECT * FROM contests ORDER BY id DESC LIMIT 1')->fetch();
+        $contest = resolvePublicContest();
 
-        if (!$contest || $contest['status'] === 'setup') {
+        if (!$contest) {
             $this->redirect('/');
             return;
         }
 
-        $stmt = $pdo->prepare('SELECT * FROM entries WHERE user_id = ? AND contest_id = ?');
+        $pdo   = getDB();
+        $stmt  = $pdo->prepare('SELECT * FROM entries WHERE user_id = ? AND contest_id = ?');
         $stmt->execute([(int) $_SESSION['user_id'], (int) $contest['id']]);
         $entry = $stmt->fetch();
 
@@ -211,8 +204,8 @@ class ContestController extends BaseController
             'entry'       => $entry,
             'picks'       => $picks,
             'total_score' => array_sum(array_column($picks, 'score')),
-            'is_scored'   => $contest['status'] === 'scored',
-            'is_locked'   => $contest['status'] === 'locked',
+            'is_finished' => $contest['status'] === 'finished',
+            'is_closed'   => $contest['status'] === 'closed',
         ]);
     }
 
@@ -220,14 +213,14 @@ class ContestController extends BaseController
     {
         requireLogin();
 
-        $pdo     = getDB();
-        $contest = $pdo->query('SELECT * FROM contests ORDER BY id DESC LIMIT 1')->fetch();
+        $contest = resolvePublicContest();
 
-        if (!$contest || !in_array($contest['status'], ['locked', 'scored'], true)) {
+        if (!$contest || !in_array($contest['status'], ['closed', 'finished'], true)) {
             $this->redirect('/');
             return;
         }
 
+        $pdo  = getDB();
         $stmt = $pdo->prepare(
             'SELECT u.name, u.id AS user_id, e.total_score, e.total_cost
                FROM entries e
@@ -239,7 +232,7 @@ class ContestController extends BaseController
 
         $this->render('contest/leaderboard.twig', [
             'entries'         => $stmt->fetchAll(),
-            'is_scored'       => $contest['status'] === 'scored',
+            'is_finished'     => $contest['status'] === 'finished',
             'current_user_id' => (int) $_SESSION['user_id'],
         ]);
     }

@@ -3,46 +3,59 @@
 {% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+
+    {# Active contest callout #}
+    {% if stats.active %}
+        <div class="bg-white border border-gray-200 rounded-xl p-4 mb-6 flex items-center justify-between shadow-sm">
+            <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-0.5">Active Contest</p>
+                <p class="text-gray-800 font-medium">{{ stats.active.name }} ({{ stats.active.year }})</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full
+                    {% if stats.active.status == 'setup' %}bg-gray-100 text-gray-600
+                    {% elseif stats.active.status == 'open' %}bg-green-100 text-green-700
+                    {% elseif stats.active.status == 'closed' %}bg-amber-100 text-amber-700
+                    {% else %}bg-blue-100 text-blue-700{% endif %}">
+                    {{ stats.active.status|capitalize }}
+                </span>
+                <a href="/admin/contests/{{ stats.active.id }}"
+                   class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">Manage →</a>
+            </div>
+        </div>
+    {% else %}
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+            <p class="text-amber-800 text-sm">No active contest. <a href="/admin/contests" class="font-semibold underline">Set one up →</a></p>
+        </div>
+    {% endif %}
+
+    <div class="grid grid-cols-2 md:grid-cols-2 gap-4 mb-8">
         <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
-            <p class="text-3xl font-bold text-indigo-600">{{ stats.players }}</p>
+            <p class="text-3xl font-semibold text-indigo-600">{{ stats.players }}</p>
             <p class="text-gray-500 text-sm mt-1">Players</p>
         </div>
         <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
-            <p class="text-3xl font-bold text-indigo-600">{{ stats.entries }}</p>
-            <p class="text-gray-500 text-sm mt-1">Entries</p>
-        </div>
-        <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
-            <p class="text-3xl font-bold text-indigo-600">{{ stats.countries }}</p>
-            <p class="text-gray-500 text-sm mt-1">Countries</p>
-        </div>
-        <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
-            <p class="text-3xl font-bold text-indigo-600">{{ stats.groups }}</p>
-            <p class="text-gray-500 text-sm mt-1">Groups</p>
+            <p class="text-3xl font-semibold text-indigo-600">{{ stats.contests }}</p>
+            <p class="text-gray-500 text-sm mt-1">Contests</p>
         </div>
     </div>
 
-    <h2 class="text-sm text-gray-500 uppercase tracking-wider mb-3">Setup Checklist</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <a href="/admin/contest"
+    <h2 class="text-sm text-gray-500 uppercase tracking-wider mb-3">Quick Links</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <a href="/admin/contests"
            class="bg-white border border-gray-200 hover:border-indigo-400 rounded-xl p-5 shadow-sm transition group">
-            <h3 class="font-semibold text-gray-800 group-hover:text-indigo-600 transition mb-1">Contest Settings</h3>
-            <p class="text-gray-500 text-sm">Year, name, budget limit and status.</p>
-        </a>
-        <a href="/admin/groups"
-           class="bg-white border border-gray-200 hover:border-indigo-400 rounded-xl p-5 shadow-sm transition group">
-            <h3 class="font-semibold text-gray-800 group-hover:text-indigo-600 transition mb-1">Groups</h3>
-            <p class="text-gray-500 text-sm">Manage semi-final groups and wildcards.</p>
+            <h3 class="font-semibold text-gray-800 group-hover:text-indigo-600 transition mb-1">Contests</h3>
+            <p class="text-gray-500 text-sm">Create and manage contests.</p>
         </a>
         <a href="/admin/countries"
            class="bg-white border border-gray-200 hover:border-indigo-400 rounded-xl p-5 shadow-sm transition group">
             <h3 class="font-semibold text-gray-800 group-hover:text-indigo-600 transition mb-1">Countries</h3>
-            <p class="text-gray-500 text-sm">Add countries with prices and running order.</p>
+            <p class="text-gray-500 text-sm">Manage the country catalogue.</p>
         </a>
-        <a href="/admin/scores"
+        <a href="/admin/groups"
            class="bg-white border border-gray-200 hover:border-indigo-400 rounded-xl p-5 shadow-sm transition group">
-            <h3 class="font-semibold text-gray-800 group-hover:text-indigo-600 transition mb-1">Enter Scores</h3>
-            <p class="text-gray-500 text-sm">Input final points for each country.</p>
+            <h3 class="font-semibold text-gray-800 group-hover:text-indigo-600 transition mb-1">Groups</h3>
+            <p class="text-gray-500 text-sm">Manage semi-final group templates.</p>
         </a>
     </div>
 {% endblock %}

@@ -27,8 +27,12 @@ abstract class BaseController
         $this->twig->addGlobal('is_admin',     isAdmin());
         $this->twig->addGlobal('user_name',    $_SESSION['name'] ?? null);
 
-        // Active contest — available to every template
-        $contest = getDB()->query('SELECT * FROM contests ORDER BY id DESC LIMIT 1')->fetch();
+        // Contest — resolved differently for admin vs public pages
+        $isAdmin = str_starts_with(
+            parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH),
+            '/admin'
+        );
+        $contest = $isAdmin ? resolveAdminContest() : resolvePublicContest();
         $this->twig->addGlobal('contest', $contest ?: null);
 
         // Flash message — consume from session so it only shows once

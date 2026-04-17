@@ -1,36 +1,28 @@
 {% extends 'admin/base.twig' %}
 
-{% block page_title %}Countries{% endblock %}
+{% block page_title %}Countries Catalogue{% endblock %}
 
 {% block content %}
-    {% if errors is defined and errors %}
-        <div class="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-6">
-            {% for error in errors %}
-                <p class="text-red-700 text-sm">{{ error }}</p>
-            {% endfor %}
-        </div>
-    {% endif %}
-
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
         {# Form #}
         <div>
             <h2 class="text-base text-gray-700 mb-3">
-                {{ edit_country ? 'Edit Country' : 'Add Country' }}
+                {{ edit_entry ? 'Edit Country' : 'Add Country' }}
             </h2>
 
             <form method="POST" action="/admin/countries"
                   class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-4">
 
-                <input type="hidden" name="action" value="{{ edit_country ? 'edit' : 'create' }}">
-                {% if edit_country %}
-                    <input type="hidden" name="country_id" value="{{ edit_country.id }}">
+                <input type="hidden" name="action" value="{{ edit_entry ? 'edit' : 'create' }}">
+                {% if edit_entry %}
+                    <input type="hidden" name="entry_id" value="{{ edit_entry.id }}">
                 {% endif %}
 
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Country Name</label>
                     <input type="text" id="name" name="name"
-                           value="{{ edit_country.name ?? '' }}"
+                           value="{{ edit_entry.name ?? '' }}"
                            required
                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                 </div>
@@ -38,47 +30,17 @@
                 <div>
                     <label for="flag_emoji" class="block text-sm font-medium text-gray-700 mb-1">Flag Emoji</label>
                     <input type="text" id="flag_emoji" name="flag_emoji"
-                           value="{{ edit_country.flag_emoji ?? '' }}"
+                           value="{{ edit_entry.flag_emoji ?? '' }}"
                            maxlength="8" placeholder="🇬🇧"
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                </div>
-
-                <div>
-                    <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Price (€m)</label>
-                    <input type="number" id="price" name="price"
-                           value="{{ edit_country.price ?? '' }}"
-                           step="0.1" min="0.1" required
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                </div>
-
-                <div>
-                    <label for="group_id" class="block text-sm font-medium text-gray-700 mb-1">Group</label>
-                    <select id="group_id" name="group_id" required
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                        <option value="">— Select group —</option>
-                        {% for group in groups %}
-                            <option value="{{ group.id }}"
-                                    {% if edit_country.group_id is defined and edit_country.group_id == group.id %}selected{% endif %}>
-                                {{ group.name }}{% if group.is_wildcard %} (Wildcard){% endif %}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div>
-                    <label for="running_order" class="block text-sm font-medium text-gray-700 mb-1">Running Order <span class="text-gray-400 font-normal">(optional)</span></label>
-                    <input type="number" id="running_order" name="running_order"
-                           value="{{ edit_country.running_order ?? '' }}"
-                           min="1"
                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                 </div>
 
                 <div class="flex gap-3 pt-1">
                     <button type="submit"
                             class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-lg transition text-sm">
-                        {{ edit_country ? 'Update Country' : 'Add Country' }}
+                        {{ edit_entry ? 'Update Country' : 'Add to Catalogue' }}
                     </button>
-                    {% if edit_country %}
+                    {% if edit_entry %}
                         <a href="/admin/countries"
                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-5 rounded-lg transition text-sm flex items-center">
                             Cancel
@@ -88,11 +50,11 @@
             </form>
         </div>
 
-        {# Countries list #}
+        {# Catalogue list #}
         <div>
             <h2 class="text-base text-gray-700 mb-3">
-                Current Countries
-                {% if countries %}<span class="text-gray-400 font-normal">({{ countries|length }})</span>{% endif %}
+                Country Catalogue
+                {% if countries %}<span class="text-gray-400 font-normal text-sm">({{ countries|length }})</span>{% endif %}
             </h2>
 
             {% if countries %}
@@ -101,27 +63,25 @@
                         <thead>
                             <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide border-b border-gray-200">
                                 <th class="px-4 py-2 text-left">Country</th>
-                                <th class="px-4 py-2 text-left hidden md:table-cell">Group</th>
-                                <th class="px-4 py-2 text-right">Price</th>
                                 <th class="px-4 py-2 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
-                            {% for country in countries %}
+                            {% for c in countries %}
                                 <tr class="hover:bg-gray-50 transition">
                                     <td class="px-4 py-2 font-medium text-gray-800">
-                                        {{ country.flag_emoji }} {{ country.name }}
+                                        {{ c.flag_emoji }} {{ c.name }}
                                     </td>
-                                    <td class="px-4 py-2 text-gray-500 hidden md:table-cell">{{ country.group_name }}</td>
-                                    <td class="px-4 py-2 text-right text-gray-500">€{{ country.price|number_format(1) }}m</td>
                                     <td class="px-4 py-2 text-right">
-                                        <a href="/admin/countries?edit={{ country.id }}"
-                                           class="text-xs text-indigo-600 hover:text-indigo-800 font-medium mr-2">Edit</a>
+                                        <a href="/admin/countries?edit={{ c.id }}"
+                                           class="text-xs text-indigo-600 hover:text-indigo-800 font-medium mr-3">Edit</a>
                                         <form method="POST" action="/admin/countries" class="inline"
-                                              onsubmit="return confirm('Delete {{ country.name }}?')">
+                                              onsubmit="return confirm('Remove {{ c.name }} from the catalogue?')">
                                             <input type="hidden" name="action" value="delete">
-                                            <input type="hidden" name="country_id" value="{{ country.id }}">
-                                            <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-medium">Delete</button>
+                                            <input type="hidden" name="entry_id" value="{{ c.id }}">
+                                            <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-medium">
+                                                Delete
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>
@@ -130,7 +90,7 @@
                     </table>
                 </div>
             {% else %}
-                <p class="text-gray-400 text-sm">No countries yet.</p>
+                <p class="text-gray-400 text-sm">No countries in the catalogue yet.</p>
             {% endif %}
         </div>
 

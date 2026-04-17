@@ -5,10 +5,10 @@
 {% block content %}
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-3xl text-white tracking-tight">My Team</h1>
-        {% if is_scored %}
-            <span class="bg-emerald-400/20 text-emerald-400 text-sm font-semibold px-3 py-1 rounded-full">Scored</span>
-        {% elseif is_locked %}
-            <span class="bg-fuchsia-500/20 text-fuchsia-400 text-sm font-semibold px-3 py-1 rounded-full">Locked</span>
+        {% if is_finished %}
+            <span class="bg-emerald-400/20 text-emerald-400 text-sm font-semibold px-3 py-1 rounded-full">Finished</span>
+        {% elseif is_closed %}
+            <span class="bg-fuchsia-500/20 text-fuchsia-400 text-sm font-semibold px-3 py-1 rounded-full">Closed</span>
         {% else %}
             <span class="bg-white/10 text-white/60 text-sm font-semibold px-3 py-1 rounded-full">Open</span>
         {% endif %}
@@ -21,7 +21,7 @@
                     <th class="px-4 py-3 text-left">Country</th>
                     <th class="px-4 py-3 text-left hidden sm:table-cell">Group</th>
                     <th class="px-4 py-3 text-right hidden sm:table-cell">Price</th>
-                    {% if is_scored %}
+                    {% if is_finished %}
                         <th class="px-4 py-3 text-right">Points</th>
                         <th class="px-4 py-3 text-right">Score</th>
                     {% endif %}
@@ -36,7 +36,7 @@
                         </td>
                         <td class="px-4 py-3 text-white/50 hidden sm:table-cell">{{ pick.group_name }}</td>
                         <td class="px-4 py-3 text-right text-white/50 hidden sm:table-cell">€{{ pick.price|number_format(1) }}m</td>
-                        {% if is_scored %}
+                        {% if is_finished %}
                             <td class="px-4 py-3 text-right text-white/50">
                                 {% if pick.final_score_raw is not null %}
                                     {{ pick.final_score_raw }}
@@ -54,10 +54,10 @@
                     </tr>
                 {% endfor %}
             </tbody>
-            {% if is_scored %}
+            {% if is_finished %}
                 <tfoot>
                     <tr class="bg-white/5 font-bold">
-                        <td class="px-4 py-3 text-white/60" colspan="{% if is_scored %}3{% else %}2{% endif %}">Total</td>
+                        <td class="px-4 py-3 text-white/60" colspan="{% if is_finished %}3{% else %}2{% endif %}">Total</td>
                         <td class="px-4 py-3 text-right"></td>
                         <td class="px-4 py-3 text-right text-emerald-400 text-base">{{ total_score }}</td>
                     </tr>
@@ -68,7 +68,7 @@
 
     <div class="flex flex-wrap gap-4 text-sm text-white/50">
         <span>Budget spent: <strong class="text-white">€{{ entry.total_cost|number_format(1) }}m</strong></span>
-        {% if is_scored %}
+        {% if is_finished %}
             <span>Total score: <strong class="text-emerald-400">{{ total_score }}</strong></span>
             <a href="/leaderboard" class="text-fuchsia-400 hover:text-fuchsia-300 hover:underline font-semibold">View Leaderboard →</a>
         {% endif %}

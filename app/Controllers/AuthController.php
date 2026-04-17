@@ -56,13 +56,13 @@ class AuthController extends BaseController
             $this->redirect('/');
         }
 
-        $pdo     = getDB();
-        $contest = $pdo->query('SELECT * FROM contests ORDER BY id DESC LIMIT 1')->fetch();
+        $contest = resolvePublicContest();
 
         if (!$contest || $contest['status'] !== 'open') {
             $this->redirect('/');
         }
 
+        $pdo      = getDB();
         $name     = trim($_POST['name']             ?? '');
         $email    = strtolower(trim($_POST['email'] ?? ''));
         $password =            $_POST['password']   ?? '';

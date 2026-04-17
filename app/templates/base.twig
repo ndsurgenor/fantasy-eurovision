@@ -27,7 +27,7 @@
                            class="{% if current_path == '/my-team' %}text-fuchsia-400 font-semibold{% else %}text-white/60 hover:text-white{% endif %} transition">
                             My Team
                         </a>
-                        {% if contest and contest.status in ['locked', 'scored'] %}
+                        {% if contest and contest.status in ['closed', 'finished'] %}
                             <a href="/leaderboard"
                                class="{% if current_path == '/leaderboard' %}text-fuchsia-400 font-semibold{% else %}text-white/60 hover:text-white{% endif %} transition">
                                 Leaderboard
