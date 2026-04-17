@@ -119,22 +119,9 @@
         </form>
     </div>
 
-    {# ── SCORE SAVE FORM (wraps all score inputs via the form= attribute) ── #}
-    {% if contest.status in ['open', 'closed'] %}
-        <form id="scores-form" method="POST" action="/admin/contests/{{ contest.id }}">
-            <input type="hidden" name="_action" value="save_scores">
-        </form>
-    {% endif %}
-
     {# ── GROUPS & COUNTRIES ── #}
     <div class="flex items-center justify-between mb-4">
         <h2 class="text-base text-gray-800">Groups &amp; Countries</h2>
-        {% if contest.status in ['open', 'closed'] %}
-            <button type="submit" form="scores-form"
-                    class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-1.5 px-4 rounded-lg transition text-sm">
-                Save Scores
-            </button>
-        {% endif %}
     </div>
 
     {% if groups %}
@@ -165,12 +152,6 @@
                     </form>
                 </dialog>
 
-                {# Hidden add-country form for this group (inputs reference it via form= attribute) #}
-                <form id="add-country-form-{{ group.id }}" method="POST" action="/admin/contests/{{ contest.id }}">
-                    <input type="hidden" name="_action" value="add_country">
-                    <input type="hidden" name="country_group_id" value="{{ group.id }}">
-                </form>
-
                 <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
 
                     {# Group header #}
@@ -183,10 +164,9 @@
                             {% endif %}
                         </div>
                         <div class="flex gap-2 items-center">
-                            <button type="button" id="add-country-btn-{{ group.id }}"
-                                    onclick="document.getElementById('add-country-row-{{ group.id }}').classList.remove('hidden'); this.disabled = true;"
-                                    class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium px-2.5 py-1 rounded-md transition disabled:opacity-40 disabled:cursor-not-allowed">
-                                + Add Country
+                            <button type="submit" form="settings-form" name="_redirect" value=""
+                                    class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium px-2.5 py-1 rounded-md transition">
+                                Save Group
                             </button>
                             <button type="button"
                                     onclick="document.getElementById('delete-group-dialog-{{ group.id }}').showModal()"
@@ -208,42 +188,41 @@
                                 <th class="px-4 py-2 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            {% if not groupCountries %}
-                                <tr>
-                                    <td colspan="5" class="px-4 py-3 text-sm text-gray-400">No countries in this group yet.</td>
-                                </tr>
-                            {% endif %}
+                        <tbody id="country-tbody-{{ group.id }}" class="divide-y divide-gray-100">
                             {% for country in groupCountries %}
                                 <tr class="hover:bg-gray-50 transition">
-                                    <td class="px-4 py-2 font-medium text-gray-800">
-                                        {{ country.flag_emoji }} {{ country.name }}
+                                    <td class="px-4 py-2">
+                                        <select name="country_catalogue_id[{{ country.id }}]" form="settings-form"
+                                                class="w-full border border-gray-200 rounded px-1.5 py-0.5 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400">
+                                            <option value="">Please select...</option>
+                                            {% for cat in all_country_catalogue %}
+                                                <option value="{{ cat.id }}" {{ country.catalogue_id == cat.id ? 'selected' : '' }}>
+                                                    {{ cat.flag_emoji }} {{ cat.name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
                                     </td>
                                     <td class="px-4 py-2 text-right">
-                                        <form method="POST" action="/admin/contests/{{ contest.id }}"
-                                              class="inline-flex items-center gap-1 justify-end">
-                                            <input type="hidden" name="_action" value="edit_country">
-                                            <input type="hidden" name="country_id" value="{{ country.id }}">
-                                            <input type="number" name="country_price"
-                                                   value="{{ country.price }}"
-                                                   step="0.1" min="0.1"
-                                                   class="w-16 border border-gray-200 rounded px-1.5 py-0.5 text-sm text-right text-gray-900 focus:outline-none focus:ring-1 focus:ring-indigo-400">
-                                            <input type="hidden" name="running_order" value="{{ country.running_order ?? '' }}">
-                                            <button type="submit" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">✓</button>
-                                        </form>
+                                        <input type="number" name="country_price[{{ country.id }}]"
+                                               value="{{ country.price|number_format(1, '.', '') }}" form="settings-form"
+                                               step="0.1" min="0.1"
+                                               class="w-16 border border-gray-200 rounded px-1.5 py-0.5 text-sm text-right text-gray-900 focus:outline-none focus:ring-1 focus:ring-indigo-400">
                                     </td>
-                                    <td class="px-4 py-2 text-center text-gray-500 text-xs">
-                                        {{ country.running_order ?? '—' }}
+                                    <td class="px-4 py-2 text-center">
+                                        <input type="number" name="running_order[{{ country.id }}]"
+                                               value="{{ country.running_order ?? '' }}" form="settings-form"
+                                               min="1" placeholder="—"
+                                               class="w-14 border border-gray-200 rounded px-1.5 py-0.5 text-sm text-center text-gray-900 focus:outline-none focus:ring-1 focus:ring-indigo-400">
                                     </td>
                                     <td class="px-4 py-2 text-right">
-                                        {% if contest.status in ['open', 'closed'] %}
+                                        {% if contest.status != 'finished' %}
                                             <input type="number" name="scores[{{ country.id }}]"
                                                    value="{{ country.final_score_raw ?? '' }}"
-                                                   form="scores-form"
+                                                   form="settings-form"
                                                    placeholder="—"
                                                    class="w-16 border border-gray-200 rounded px-1.5 py-0.5 text-sm text-right text-gray-900 focus:outline-none focus:ring-1 focus:ring-emerald-400">
                                         {% else %}
-                                            <span class="text-gray-500">{{ country.final_score_raw ?? '—' }}</span>
+                                            <span class="text-gray-500 text-xs">{{ country.final_score_raw ?? '—' }}</span>
                                         {% endif %}
                                     </td>
                                     <td class="px-4 py-2 text-right">
@@ -257,46 +236,48 @@
                                 </tr>
                             {% endfor %}
 
-                            {# Inline add-country row — hidden until '+ Add Country' is clicked #}
-                            <tr id="add-country-row-{{ group.id }}" class="hidden bg-indigo-50/30">
-                                <td class="px-4 py-2">
-                                    <select name="country_catalogue_id" form="add-country-form-{{ group.id }}"
-                                            class="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                        <option value="">Please select...</option>
-                                        {% for cat in all_country_catalogue %}
-                                            <option value="{{ cat.id }}">{{ cat.flag_emoji }} {{ cat.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td class="px-4 py-2 text-right">
-                                    <input type="number" name="country_price" form="add-country-form-{{ group.id }}"
-                                           step="0.1" min="0.1" required placeholder="0.0"
-                                           class="w-16 border border-gray-200 rounded px-1.5 py-0.5 text-sm text-right text-gray-900 focus:outline-none focus:ring-1 focus:ring-indigo-400">
-                                </td>
-                                <td class="px-4 py-2 text-center">
-                                    <input type="number" name="running_order" form="add-country-form-{{ group.id }}"
-                                           min="1" placeholder="—"
-                                           class="w-14 border border-gray-200 rounded px-1.5 py-0.5 text-sm text-center text-gray-900 focus:outline-none focus:ring-1 focus:ring-indigo-400">
-                                </td>
-                                <td class="px-4 py-2 text-right">
-                                    <span class="text-gray-300">—</span>
-                                </td>
-                                <td class="px-4 py-2 text-right">
-                                    <div class="flex gap-1.5 justify-end">
-                                        <button type="submit" form="add-country-form-{{ group.id }}"
-                                                class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-2.5 py-1 rounded transition">
-                                            Save
-                                        </button>
-                                        <button type="button"
-                                                onclick="document.getElementById('add-country-row-{{ group.id }}').classList.add('hidden'); document.getElementById('add-country-btn-{{ group.id }}').disabled = false;"
-                                                class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium px-2.5 py-1 rounded transition">
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
+
+                    <div class="flex justify-end px-4 py-2 border-t border-gray-100">
+                        <button type="button"
+                                onclick="addCountryRow('{{ group.id }}')"
+                                class="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium px-2.5 py-1 rounded-md transition">
+                            + Add
+                        </button>
+                    </div>
+
+                    {# Row template — cloned by JS each time '+ Add Country' is clicked #}
+                    <template id="new-country-tpl-{{ group.id }}">
+                        <tr class="bg-emerald-50/30">
+                            <td class="px-4 py-1.5">
+                                <select name="new_catalogue_id[{{ group.id }}][]" form="settings-form"
+                                        class="w-full border border-gray-200 rounded px-1.5 py-0.5 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-emerald-400">
+                                    <option value="">Please select...</option>
+                                    {% for cat in all_country_catalogue %}
+                                        <option value="{{ cat.id }}">{{ cat.flag_emoji }} {{ cat.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td class="px-4 py-1.5 text-right">
+                                <input type="number" name="new_price[{{ group.id }}][]" form="settings-form"
+                                       step="0.1" min="0.1" placeholder="0.0"
+                                       class="w-16 border border-gray-200 rounded px-1.5 py-0.5 text-sm text-right text-gray-900 focus:outline-none focus:ring-1 focus:ring-emerald-400">
+                            </td>
+                            <td class="px-4 py-1.5 text-center">
+                                <input type="number" name="new_order[{{ group.id }}][]" form="settings-form"
+                                       min="1" placeholder="—"
+                                       class="w-14 border border-gray-200 rounded px-1.5 py-0.5 text-sm text-center text-gray-900 focus:outline-none focus:ring-1 focus:ring-emerald-400">
+                            </td>
+                            <td class="px-4 py-1.5 text-right">
+                                <span class="text-gray-300 text-xs">—</span>
+                            </td>
+                            <td class="px-4 py-1.5 text-right">
+                                <button type="button" onclick="this.closest('tr').remove()"
+                                        class="text-xs text-red-500 hover:text-red-700 font-medium">Remove</button>
+                            </td>
+                        </tr>
+                    </template>
 
                 </div>
             {% endfor %}
@@ -364,5 +345,18 @@
             </button>
         </form>
     </div>
+
+<script>
+function addCountryRow(groupId) {
+    var tpl   = document.getElementById('new-country-tpl-' + groupId);
+    var tbody = document.getElementById('country-tbody-' + groupId);
+    if (tpl && tbody) tbody.appendChild(tpl.content.cloneNode(true));
+}
+
+(function() {
+    var newGroupId = new URLSearchParams(window.location.search).get('new_group_id');
+    if (newGroupId) addCountryRow(newGroupId);
+})();
+</script>
 
 {% endblock %}

@@ -244,7 +244,11 @@ class AdminController extends BaseController
                 }
                 break;
             case 'delete_contest': $this->doDeleteContest($pdo, $contestId); return;
-            case 'add_group':      $this->doAddGroup($pdo, $contestId);    break;
+            case 'add_group':
+                $newGroupId = $this->doAddGroup($pdo, $contestId);
+                $suffix = $newGroupId ? '?new_group_id=' . $newGroupId : '';
+                $this->redirect('/admin/contests/' . $contestId . $suffix);
+                return;
             case 'edit_group':     $this->doEditGroup($pdo, $contestId);   break;
             case 'delete_group':   $this->doDeleteGroup($pdo, $contestId); break;
             case 'add_country':    $this->doAddCountry($pdo, $contestId);  break;
@@ -293,15 +297,80 @@ class AdminController extends BaseController
             'UPDATE contests SET year=?, name=?, budget_limit=?, status=?, is_active=?, launch_date=? WHERE id=?'
         )->execute([$year, $name, $budget, $status, $isActive, $launchDate, (int) $contest['id']]);
 
-        // Trigger score recalculation when moving to finished
+        // Update inline country fields (catalogue, price, running order)
+        if (!empty($_POST['country_price']) && is_array($_POST['country_price'])) {
+            foreach ($_POST['country_price'] as $rawId => $rawPrice) {
+                $countryId   = (int) $rawId;
+                $price       = round((float) $rawPrice, 1);
+                $order       = ($_POST['running_order'][$rawId] ?? '') !== '' ? (int) $_POST['running_order'][$rawId] : null;
+                $catalogueId = (int) ($_POST['country_catalogue_id'][$rawId] ?? 0) ?: null;
+
+                if ($price <= 0) continue;
+
+                if ($catalogueId) {
+                    $catStmt = $pdo->prepare('SELECT name, flag_emoji FROM country_catalogue WHERE id = ?');
+                    $catStmt->execute([$catalogueId]);
+                    if ($cat = $catStmt->fetch()) {
+                        $pdo->prepare(
+                            'UPDATE countries SET catalogue_id=?, name=?, flag_emoji=?, price=?, running_order=? WHERE id=? AND contest_id=?'
+                        )->execute([$catalogueId, $cat['name'], $cat['flag_emoji'], $price, $order, $countryId, (int) $contest['id']]);
+                        continue;
+                    }
+                }
+
+                $pdo->prepare('UPDATE countries SET price=?, running_order=? WHERE id=? AND contest_id=?')
+                    ->execute([$price, $order, $countryId, (int) $contest['id']]);
+            }
+        }
+
+        // Insert new countries from inline add rows (new_catalogue_id[groupId][] arrays)
+        if (!empty($_POST['new_catalogue_id']) && is_array($_POST['new_catalogue_id'])) {
+            $insertCountry = $pdo->prepare(
+                'INSERT INTO countries (contest_id, catalogue_id, group_id, name, flag_emoji, price, running_order) VALUES (?,?,?,?,?,?,?)'
+            );
+            $catStmt = $pdo->prepare('SELECT name, flag_emoji FROM country_catalogue WHERE id = ?');
+
+            foreach ($_POST['new_catalogue_id'] as $groupId => $entries) {
+                if (!is_array($entries)) continue;
+                foreach ($entries as $idx => $catalogueId) {
+                    $catalogueId = (int) $catalogueId ?: null;
+                    if (!$catalogueId) continue;
+
+                    $price = round((float) ($_POST['new_price'][$groupId][$idx] ?? 0), 1);
+                    if ($price <= 0) continue;
+
+                    $order = ($_POST['new_order'][$groupId][$idx] ?? '') !== '' ? (int) $_POST['new_order'][$groupId][$idx] : null;
+
+                    $catStmt->execute([$catalogueId]);
+                    if ($cat = $catStmt->fetch()) {
+                        $insertCountry->execute([(int) $contest['id'], $catalogueId, (int) $groupId, $cat['name'], $cat['flag_emoji'], $price, $order]);
+                    }
+                }
+            }
+        }
+
+        // Update scores (admin can always edit scores unless contest is finished)
+        $scoresUpdated = false;
+        if ($status !== 'finished' && !empty($_POST['scores']) && is_array($_POST['scores'])) {
+            $updateScore = $pdo->prepare('UPDATE countries SET final_score_raw=? WHERE id=? AND contest_id=?');
+            foreach ($_POST['scores'] as $rawId => $rawScore) {
+                $score = ($rawScore === '' || $rawScore === null) ? null : (int) $rawScore;
+                $updateScore->execute([$score, (int) $rawId, (int) $contest['id']]);
+            }
+            $scoresUpdated = true;
+        }
+
+        // Trigger score recalculation when moving to finished, or when scores were updated
         if ($status === 'finished' && $prevStatus !== 'finished') {
+            recalculateAllEntries((int) $contest['id']);
+        } elseif ($scoresUpdated) {
             recalculateAllEntries((int) $contest['id']);
         }
 
-        $this->flash('success', 'Contest settings saved.');
+        $this->flash('success', 'Contest saved.');
     }
 
-    private function doAddGroup(\PDO $pdo, int $contestId): void
+    private function doAddGroup(\PDO $pdo, int $contestId): int
     {
         $catalogueId = (int) ($_POST['group_catalogue_id'] ?? 0) ?: null;
         $name        = trim($_POST['group_name']  ?? '');
@@ -321,7 +390,7 @@ class AdminController extends BaseController
 
         if (!$name) {
             $this->flash('error', 'Group name is required.');
-            return;
+            return 0;
         }
 
         if ($isWildcard) {
@@ -329,7 +398,7 @@ class AdminController extends BaseController
             $wc->execute([$contestId]);
             if ($wc->fetch()) {
                 $this->flash('error', 'A wildcard group already exists for this contest.');
-                return;
+                return 0;
             }
         }
 
@@ -338,6 +407,7 @@ class AdminController extends BaseController
         )->execute([$contestId, $catalogueId, $name, $colour, $isWildcard, $sortOrder]);
 
         $this->flash('success', 'Group added.');
+        return (int) $pdo->lastInsertId();
     }
 
     private function doEditGroup(\PDO $pdo, int $contestId): void
