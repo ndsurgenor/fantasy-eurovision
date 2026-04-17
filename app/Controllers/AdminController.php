@@ -237,7 +237,13 @@ class AdminController extends BaseController
         $action = $_POST['_action'] ?? '';
 
         switch ($action) {
-            case 'save_settings':  $this->doSaveSettings($pdo, $contest);  break;
+            case 'save_settings':
+                $this->doSaveSettings($pdo, $contest);
+                if (!empty($_POST['_redirect'])) {
+                    $this->redirect('/admin/contests');
+                }
+                break;
+            case 'delete_contest': $this->doDeleteContest($pdo, $contestId); return;
             case 'add_group':      $this->doAddGroup($pdo, $contestId);    break;
             case 'edit_group':     $this->doEditGroup($pdo, $contestId);   break;
             case 'delete_group':   $this->doDeleteGroup($pdo, $contestId); break;
@@ -455,6 +461,13 @@ class AdminController extends BaseController
 
         $pdo->prepare('DELETE FROM countries WHERE id=? AND contest_id=?')->execute([$countryId, $contestId]);
         $this->flash('success', 'Country deleted.');
+    }
+
+    private function doDeleteContest(\PDO $pdo, int $contestId): void
+    {
+        $pdo->prepare('DELETE FROM contests WHERE id = ?')->execute([$contestId]);
+        $this->flash('success', 'Contest deleted.');
+        $this->redirect('/admin/contests');
     }
 
     private function doSaveScores(\PDO $pdo, array $contest): void

@@ -4,16 +4,61 @@
 
 {% block content %}
 
-    {# Breadcrumb #}
-    <div class="mb-5">
+    {# Breadcrumb + actions #}
+    <div class="flex items-center justify-between mb-5">
         <a href="/admin/contests" class="text-sm text-indigo-600 hover:text-indigo-800">← All Contests</a>
+        <div class="flex items-center gap-2">
+            <button type="submit" form="settings-form" name="_redirect" value=""
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition">
+                Save
+            </button>
+            <button type="submit" form="settings-form" name="_redirect" value="1"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition">
+                Save &amp; Close
+            </button>
+            <button type="button" onclick="document.getElementById('delete-dialog').showModal()"
+                    {{ contest.status != 'setup' ? 'disabled title="Only contests in Setup status can be deleted"' }}
+                    class="bg-rose-500 hover:bg-rose-600 text-white font-semibold py-2 px-4 rounded-lg text-sm transition disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none">
+                Delete Contest
+            </button>
+        </div>
     </div>
+
+    {# Delete confirmation dialog #}
+    <dialog id="delete-dialog"
+            class="rounded-xl shadow-xl border border-gray-200 p-6 w-full max-w-md mx-auto mt-[20vh] backdrop:bg-black/40">
+        <h2 class="text-base font-semibold text-gray-800 mb-2">Delete Contest</h2>
+        <p class="text-sm text-gray-600 mb-1">
+            This will permanently delete <strong>{{ contest.name }}</strong>, including all groups, countries, and player entries.
+        </p>
+        <p class="text-sm text-gray-600 mb-4">Type <strong>DELETE</strong> to confirm.</p>
+
+        <input type="text" id="delete-confirm-input" placeholder="DELETE"
+               oninput="document.getElementById('delete-confirm-btn').disabled = this.value !== 'DELETE'"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 mb-4
+                      focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent">
+
+        <form method="POST" action="/admin/contests/{{ contest.id }}">
+            <input type="hidden" name="_action" value="delete_contest">
+            <div class="flex gap-3 justify-end">
+                <button type="button"
+                        onclick="document.getElementById('delete-dialog').close(); document.getElementById('delete-confirm-input').value = ''; document.getElementById('delete-confirm-btn').disabled = true;"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg text-sm transition">
+                    Cancel
+                </button>
+                <button type="submit" id="delete-confirm-btn" disabled
+                        class="bg-red-600 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded-lg text-sm transition">
+                    Delete Contest
+                </button>
+            </div>
+        </form>
+    </dialog>
 
     {# ── SETTINGS FORM ── #}
     <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm mb-8">
         <h2 class="text-base text-gray-800 mb-4">Contest Settings</h2>
 
-        <form method="POST" action="/admin/contests/{{ contest.id }}">
+        <form id="settings-form" method="POST" action="/admin/contests/{{ contest.id }}">
             <input type="hidden" name="_action" value="save_settings">
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
@@ -71,10 +116,6 @@
 
             </div>
 
-            <button type="submit"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-lg transition text-sm">
-                Save Settings
-            </button>
         </form>
     </div>
 
