@@ -16,6 +16,11 @@
 @layer base {
   h1, h2 {
     font-family: var(--font-display);
+    font-weight: 600;
+  }
+
+  button, [type="submit"], [type="button"], [type="reset"] {
+    cursor: pointer;
   }
 
   html {

@@ -3,7 +3,7 @@
 {% block title %}Pick Your Team — {{ site_name }}{% endblock %}
 
 {% block content %}
-    <h1 class="text-3xl font-bold text-white mb-2 tracking-tight">Pick Your Team</h1>
+    <h1 class="text-3xl text-white mb-2 tracking-tight">Pick Your Team</h1>
     <p class="text-white/50 mb-6">Choose 8 countries within your budget. You must pick at least 1 from each group (max 2 per group).</p>
 
     {% if errors is defined and errors %}
@@ -43,7 +43,7 @@
         {% for group in groups %}
             <div class="mb-6">
                 <div class="flex items-center gap-3 mb-3">
-                    <h2 class="text-lg font-bold text-fuchsia-400">{{ group.name }}</h2>
+                    <h2 class="text-lg text-fuchsia-400">{{ group.name }}</h2>
                     {% if group.is_wildcard %}
                         <span class="text-xs bg-emerald-400/20 text-emerald-400 font-bold px-2 py-0.5 rounded-full">Wildcard (optional)</span>
                     {% else %}
