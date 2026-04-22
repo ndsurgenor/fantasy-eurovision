@@ -298,27 +298,19 @@
                 <select name="group_catalogue_id"
                         onchange="
                             var opt = this.options[this.selectedIndex];
-                            var nameField = this.closest('form').querySelector('[name=group_name]');
                             var colourField = this.closest('form').querySelector('[name=group_colour]');
                             if (opt.value) {
-                                nameField.value = opt.dataset.name || '';
                                 colourField.value = opt.dataset.colour || '#6366f1';
                             }
                         "
                         class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="">— Pick from catalogue —</option>
+                    <option value="">Please select...</option>
                     {% for g in all_group_catalogue %}
                         <option value="{{ g.id }}" data-name="{{ g.name }}" data-colour="{{ g.colour }}">
                             {{ g.name }}
                         </option>
                     {% endfor %}
                 </select>
-            </div>
-
-            <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">Name <span class="text-gray-400">(or custom)</span></label>
-                <input type="text" name="group_name" placeholder="e.g. Semi-Final 1"
-                       class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
             </div>
 
             <div>
