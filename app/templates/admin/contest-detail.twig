@@ -124,6 +124,58 @@
         <h2 class="text-base text-gray-800">Groups &amp; Countries</h2>
     </div>
 
+    {# ── ADD GROUP ── #}
+    <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm mb-6">
+        <h2 class="text-base text-gray-700 mb-4">Add Group to Contest</h2>
+        <form method="POST" action="/admin/contests/{{ contest.id }}"
+              class="flex flex-wrap gap-3 items-end">
+            <input type="hidden" name="_action" value="add_group">
+
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">From Catalogue</label>
+                <select name="group_catalogue_id"
+                        onchange="
+                            var opt = this.options[this.selectedIndex];
+                            var colourField = this.closest('form').querySelector('[name=group_colour]');
+                            if (opt.value) {
+                                colourField.value = opt.dataset.colour || '#6366f1';
+                            }
+                        "
+                        class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="">Please select...</option>
+                    {% for g in all_group_catalogue %}
+                        <option value="{{ g.id }}" data-name="{{ g.name }}" data-colour="{{ g.colour }}">
+                            {{ g.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Colour</label>
+                <input type="color" name="group_colour" value="#6366f1"
+                       class="h-9 w-12 rounded border border-gray-300 cursor-pointer">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Sort Order</label>
+                <input type="number" name="sort_order" value="{{ groups|length }}"
+                       class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-20 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <label class="flex items-center gap-2 cursor-pointer pb-1">
+                <input type="checkbox" name="is_wildcard" value="1"
+                       class="w-4 h-4 text-indigo-600 rounded border-gray-300">
+                <span class="text-sm text-gray-700">Wildcard group</span>
+            </label>
+
+            <button type="submit"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 px-5 rounded-lg transition text-sm">
+                Add Group
+            </button>
+        </form>
+    </div>
+
     {% if groups %}
         <div class="space-y-6 mb-8">
             {% for group in groups %}
@@ -285,58 +337,6 @@
     {% else %}
         <p class="text-gray-400 text-sm mb-6">No groups yet. Add one below.</p>
     {% endif %}
-
-    {# ── ADD GROUP ── #}
-    <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-        <h2 class="text-base text-gray-700 mb-4">Add Group to Contest</h2>
-        <form method="POST" action="/admin/contests/{{ contest.id }}"
-              class="flex flex-wrap gap-3 items-end">
-            <input type="hidden" name="_action" value="add_group">
-
-            <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">From Catalogue</label>
-                <select name="group_catalogue_id"
-                        onchange="
-                            var opt = this.options[this.selectedIndex];
-                            var colourField = this.closest('form').querySelector('[name=group_colour]');
-                            if (opt.value) {
-                                colourField.value = opt.dataset.colour || '#6366f1';
-                            }
-                        "
-                        class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="">Please select...</option>
-                    {% for g in all_group_catalogue %}
-                        <option value="{{ g.id }}" data-name="{{ g.name }}" data-colour="{{ g.colour }}">
-                            {{ g.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">Colour</label>
-                <input type="color" name="group_colour" value="#6366f1"
-                       class="h-9 w-12 rounded border border-gray-300 cursor-pointer">
-            </div>
-
-            <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">Sort Order</label>
-                <input type="number" name="sort_order" value="{{ groups|length }}"
-                       class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-20 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </div>
-
-            <label class="flex items-center gap-2 cursor-pointer pb-1">
-                <input type="checkbox" name="is_wildcard" value="1"
-                       class="w-4 h-4 text-indigo-600 rounded border-gray-300">
-                <span class="text-sm text-gray-700">Wildcard group</span>
-            </label>
-
-            <button type="submit"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 px-5 rounded-lg transition text-sm">
-                Add Group
-            </button>
-        </form>
-    </div>
 
 <script>
 function addCountryRow(groupId) {
