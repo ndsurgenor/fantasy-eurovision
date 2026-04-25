@@ -128,7 +128,7 @@
     <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm mb-6">
         <h2 class="text-base text-gray-700 mb-4">Add Group to Contest</h2>
         <form method="POST" action="/admin/contests/{{ contest.id }}"
-              class="flex flex-wrap gap-3 items-end">
+              class="flex flex-wrap gap-6 items-end">
             <input type="hidden" name="_action" value="add_group">
 
             <div>
@@ -141,7 +141,7 @@
                                 colourField.value = opt.dataset.colour || '#6366f1';
                             }
                         "
-                        class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 w-72">
                     <option value="">Please select...</option>
                     {% for g in all_group_catalogue %}
                         <option value="{{ g.id }}" data-name="{{ g.name }}" data-colour="{{ g.colour }}">
