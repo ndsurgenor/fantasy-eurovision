@@ -182,7 +182,7 @@ class ContestController extends BaseController
         }
 
         $stmt = $pdo->prepare(
-            'SELECT c.name, c.flag_emoji, c.price, c.final_score_raw, c.running_order,
+            'SELECT c.name, c.flag_image, c.price, c.final_score_raw, c.running_order,
                     cg.name AS group_name
                FROM entry_countries ec
                JOIN countries c       ON c.id  = ec.country_id

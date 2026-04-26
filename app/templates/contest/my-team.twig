@@ -31,7 +31,9 @@
                 {% for pick in picks %}
                     <tr class="hover:bg-white/5 transition">
                         <td class="px-4 py-3 font-medium text-white">
-                            <span class="text-xl mr-2">{{ pick.flag_emoji }}</span>
+                            {% if pick.flag_image %}
+                                <img src="/uploads/flags/{{ pick.flag_image }}" alt="{{ pick.name }}" class="h-6 w-auto mr-2 rounded-sm flex-shrink-0 inline-block align-middle">
+                            {% endif %}
                             {{ pick.name }}
                         </td>
                         <td class="px-4 py-3 text-white/50 hidden sm:table-cell">{{ pick.group_name }}</td>

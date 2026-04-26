@@ -249,7 +249,7 @@
                                             <option value="">Please select...</option>
                                             {% for cat in all_country_catalogue %}
                                                 <option value="{{ cat.id }}" {{ country.catalogue_id == cat.id ? 'selected' : '' }}>
-                                                    {{ cat.flag_emoji }} {{ cat.name }}
+                                                    {{ cat.name }}
                                                 </option>
                                             {% endfor %}
                                         </select>
@@ -307,7 +307,7 @@
                                         class="w-full border border-gray-200 rounded px-1.5 py-0.5 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-emerald-400">
                                     <option value="">Please select...</option>
                                     {% for cat in all_country_catalogue %}
-                                        <option value="{{ cat.id }}">{{ cat.flag_emoji }} {{ cat.name }}</option>
+                                        <option value="{{ cat.id }}">{{ cat.name }}</option>
                                     {% endfor %}
                                 </select>
                             </td>

@@ -165,7 +165,7 @@ class AdminController extends BaseController
             $countries->execute([$sourceId]);
 
             $insertCountry = $pdo->prepare(
-                'INSERT INTO countries (contest_id, catalogue_id, group_id, name, flag_emoji, price, running_order)
+                'INSERT INTO countries (contest_id, catalogue_id, group_id, name, flag_image, price, running_order)
                  VALUES (?,?,?,?,?,?,?)'
             );
             foreach ($countries->fetchAll() as $c) {
@@ -173,7 +173,7 @@ class AdminController extends BaseController
                 if (!$newGroupId) continue;
                 $insertCountry->execute([
                     $newContestId, $c['catalogue_id'], $newGroupId,
-                    $c['name'], $c['flag_emoji'], $c['price'], $c['running_order'],
+                    $c['name'], $c['flag_image'], $c['price'], $c['running_order'],
                 ]);
             }
 
@@ -308,12 +308,12 @@ class AdminController extends BaseController
                 if ($price <= 0) continue;
 
                 if ($catalogueId) {
-                    $catStmt = $pdo->prepare('SELECT name, flag_emoji FROM country_catalogue WHERE id = ?');
+                    $catStmt = $pdo->prepare('SELECT name, flag_image FROM country_catalogue WHERE id = ?');
                     $catStmt->execute([$catalogueId]);
                     if ($cat = $catStmt->fetch()) {
                         $pdo->prepare(
-                            'UPDATE countries SET catalogue_id=?, name=?, flag_emoji=?, price=?, running_order=? WHERE id=? AND contest_id=?'
-                        )->execute([$catalogueId, $cat['name'], $cat['flag_emoji'], $price, $order, $countryId, (int) $contest['id']]);
+                            'UPDATE countries SET catalogue_id=?, name=?, flag_image=?, price=?, running_order=? WHERE id=? AND contest_id=?'
+                        )->execute([$catalogueId, $cat['name'], $cat['flag_image'], $price, $order, $countryId, (int) $contest['id']]);
                         continue;
                     }
                 }
@@ -326,9 +326,9 @@ class AdminController extends BaseController
         // Insert new countries from inline add rows (new_catalogue_id[groupId][] arrays)
         if (!empty($_POST['new_catalogue_id']) && is_array($_POST['new_catalogue_id'])) {
             $insertCountry = $pdo->prepare(
-                'INSERT INTO countries (contest_id, catalogue_id, group_id, name, flag_emoji, price, running_order) VALUES (?,?,?,?,?,?,?)'
+                'INSERT INTO countries (contest_id, catalogue_id, group_id, name, flag_image, price, running_order) VALUES (?,?,?,?,?,?,?)'
             );
-            $catStmt = $pdo->prepare('SELECT name, flag_emoji FROM country_catalogue WHERE id = ?');
+            $catStmt = $pdo->prepare('SELECT name, flag_image FROM country_catalogue WHERE id = ?');
 
             foreach ($_POST['new_catalogue_id'] as $groupId => $entries) {
                 if (!is_array($entries)) continue;
@@ -343,7 +343,7 @@ class AdminController extends BaseController
 
                     $catStmt->execute([$catalogueId]);
                     if ($cat = $catStmt->fetch()) {
-                        $insertCountry->execute([(int) $contest['id'], $catalogueId, (int) $groupId, $cat['name'], $cat['flag_emoji'], $price, $order]);
+                        $insertCountry->execute([(int) $contest['id'], $catalogueId, (int) $groupId, $cat['name'], $cat['flag_image'], $price, $order]);
                     }
                 }
             }
@@ -474,16 +474,16 @@ class AdminController extends BaseController
             return;
         }
 
-        // Get name and emoji from catalogue if provided
+        // Get name and flag image from catalogue if provided
         $name      = trim($_POST['country_name'] ?? '');
-        $flagEmoji = trim($_POST['flag_emoji']   ?? '');
+        $flagImage = null;
 
         if ($catalogueId) {
             $row = $pdo->prepare('SELECT * FROM country_catalogue WHERE id = ?');
             $row->execute([$catalogueId]);
             if ($cat = $row->fetch()) {
-                if (!$name)      $name      = $cat['name'];
-                if (!$flagEmoji) $flagEmoji = $cat['flag_emoji'] ?? '';
+                if (!$name) $name = $cat['name'];
+                $flagImage = $cat['flag_image'] ?? null;
             }
         }
 
@@ -493,9 +493,9 @@ class AdminController extends BaseController
         }
 
         $pdo->prepare(
-            'INSERT INTO countries (contest_id, catalogue_id, group_id, name, flag_emoji, price, running_order)
+            'INSERT INTO countries (contest_id, catalogue_id, group_id, name, flag_image, price, running_order)
              VALUES (?,?,?,?,?,?,?)'
-        )->execute([$contestId, $catalogueId, $groupId, $name, $flagEmoji ?: null, $price, $runOrder]);
+        )->execute([$contestId, $catalogueId, $groupId, $name, $flagImage, $price, $runOrder]);
 
         $this->flash('success', 'Country added.');
     }
@@ -585,11 +585,10 @@ class AdminController extends BaseController
     {
         requireAdmin();
 
-        $pdo       = getDB();
-        $action    = $_POST['action']     ?? '';
-        $entryId   = (int) ($_POST['entry_id']   ?? 0);
-        $name      = trim($_POST['name']          ?? '');
-        $flagEmoji = trim($_POST['flag_emoji']    ?? '');
+        $pdo     = getDB();
+        $action  = $_POST['action']   ?? '';
+        $entryId = (int) ($_POST['entry_id'] ?? 0);
+        $name    = trim($_POST['name'] ?? '');
 
         if (in_array($action, ['create', 'edit'], true) && !$name) {
             $this->flash('error', 'Country name is required.');
@@ -597,13 +596,25 @@ class AdminController extends BaseController
             return;
         }
 
+        $flagImage = $this->handleFlagUpload($name);
+        if ($flagImage === false) {
+            $this->redirect('/admin/countries');
+            return;
+        }
+
         if ($action === 'create') {
-            $pdo->prepare('INSERT INTO country_catalogue (name, flag_emoji) VALUES (?,?)')
-                ->execute([$name, $flagEmoji ?: null]);
+            $pdo->prepare('INSERT INTO country_catalogue (name, flag_image) VALUES (?,?)')
+                ->execute([$name, $flagImage]);
             $this->flash('success', 'Country added to catalogue.');
         } elseif ($action === 'edit') {
-            $pdo->prepare('UPDATE country_catalogue SET name=?, flag_emoji=? WHERE id=?')
-                ->execute([$name, $flagEmoji ?: null, $entryId]);
+            if ($flagImage === null) {
+                // No new file uploaded — keep existing image
+                $flagImage = $pdo->prepare('SELECT flag_image FROM country_catalogue WHERE id = ?');
+                $flagImage->execute([$entryId]);
+                $flagImage = $flagImage->fetchColumn() ?: null;
+            }
+            $pdo->prepare('UPDATE country_catalogue SET name=?, flag_image=? WHERE id=?')
+                ->execute([$name, $flagImage, $entryId]);
             $this->flash('success', 'Country updated.');
         } elseif ($action === 'delete') {
             $pdo->prepare('DELETE FROM country_catalogue WHERE id=?')->execute([$entryId]);
@@ -611,6 +622,42 @@ class AdminController extends BaseController
         }
 
         $this->redirect('/admin/countries');
+    }
+
+    private function handleFlagUpload(string $countryName): string|null|false
+    {
+        if (empty($_FILES['flag_image']['name'])) {
+            return null;
+        }
+
+        $file = $_FILES['flag_image'];
+
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            $this->flash('error', 'File upload failed (error code ' . $file['error'] . ').');
+            return false;
+        }
+
+        $finfo    = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->file($file['tmp_name']);
+        $mimeMap  = ['image/png' => 'png', 'image/gif' => 'gif', 'image/jpeg' => 'jpg', 'image/webp' => 'webp'];
+
+        if (!isset($mimeMap[$mimeType])) {
+            $this->flash('error', 'Invalid file type. Please upload a PNG, GIF, JPEG, or WebP image.');
+            return false;
+        }
+
+        $ext      = $mimeMap[$mimeType];
+        $slug     = preg_replace('/[^a-z0-9]+/', '-', strtolower($countryName));
+        $slug     = trim($slug, '-');
+        $filename = $slug . '.' . $ext;
+        $dest     = dirname(__DIR__, 2) . '/public/uploads/flags/' . $filename;
+
+        if (!move_uploaded_file($file['tmp_name'], $dest)) {
+            $this->flash('error', 'Failed to save uploaded file.');
+            return false;
+        }
+
+        return $filename;
     }
 
     // -------------------------------------------------------------------------
