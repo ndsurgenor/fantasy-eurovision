@@ -20,7 +20,8 @@
       "Bash(git add:*)",
       "Bash(npm run *)",
       "WebFetch(domain:www.eurovision.tv)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(C:/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe *)"
     ]
   }
 }
