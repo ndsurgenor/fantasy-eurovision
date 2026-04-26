@@ -637,16 +637,15 @@ class AdminController extends BaseController
             return false;
         }
 
-        $finfo    = new \finfo(FILEINFO_MIME_TYPE);
-        $mimeType = $finfo->file($file['tmp_name']);
-        $mimeMap  = ['image/png' => 'png', 'image/gif' => 'gif', 'image/jpeg' => 'jpg', 'image/webp' => 'webp'];
+        $imageInfo = @getimagesize($file['tmp_name']);
+        $typeMap   = [IMAGETYPE_PNG => 'png', IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpg', IMAGETYPE_WEBP => 'webp'];
 
-        if (!isset($mimeMap[$mimeType])) {
+        if (!$imageInfo || !isset($typeMap[$imageInfo[2]])) {
             $this->flash('error', 'Invalid file type. Please upload a PNG, GIF, JPEG, or WebP image.');
             return false;
         }
 
-        $ext      = $mimeMap[$mimeType];
+        $ext      = $typeMap[$imageInfo[2]];
         $slug     = preg_replace('/[^a-z0-9]+/', '-', strtolower($countryName));
         $slug     = trim($slug, '-');
         $filename = $slug . '.' . $ext;
