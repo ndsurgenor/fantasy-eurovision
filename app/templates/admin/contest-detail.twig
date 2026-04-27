@@ -1,6 +1,6 @@
 {% extends 'admin/base.twig' %}
 
-{% block page_title %}{{ contest.year }} — {{ contest.name }}{% endblock %}
+{% block page_title %}{{ contest.year }} | {{ contest.name }}{% endblock %}
 
 {% block content %}
 
@@ -244,15 +244,20 @@
                             {% for country in groupCountries %}
                                 <tr class="hover:bg-gray-50 transition">
                                     <td class="px-4 py-2">
-                                        <select name="country_catalogue_id[{{ country.id }}]" form="settings-form"
-                                                class="w-full border border-gray-200 rounded px-1.5 py-0.5 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400">
-                                            <option value="">Please select...</option>
-                                            {% for cat in all_country_catalogue %}
-                                                <option value="{{ cat.id }}" {{ country.catalogue_id == cat.id ? 'selected' : '' }}>
-                                                    {{ cat.name }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
+                                        <div class="flex items-center gap-2">
+                                            <select name="country_catalogue_id[{{ country.id }}]" form="settings-form"
+                                                    class="w-full border border-gray-200 rounded px-1.5 py-0.5 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400">
+                                                <option value="">Please select...</option>
+                                                {% for cat in all_country_catalogue %}
+                                                    <option value="{{ cat.id }}" {{ country.catalogue_id == cat.id ? 'selected' : '' }}>
+                                                        {{ cat.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                            {% if country.flag_image %}
+                                                <img src="/uploads/flags/{{ country.flag_image }}" alt="{{ country.name }}" class="h-auto w-auto rounded-sm flex-shrink-0">
+                                            {% endif %}
+                                        </div>
                                     </td>
                                     <td class="px-4 py-2 text-right">
                                         <input type="number" name="country_price[{{ country.id }}]"
