@@ -64,11 +64,11 @@
                                    {% if country.id in checked_ids %}checked{% endif %}
                                    class="accent-fuchsia-500 w-4 h-4 flex-shrink-0">
                             {% if country.flag_image %}
-                                <img src="/uploads/flags/{{ country.flag_image }}" alt="{{ country.name }}" class="h-8 w-auto flex-shrink-0 rounded-sm">
+                                <img src="/uploads/flags/{{ country.flag_image }}" alt="{{ country.name }}" class="h-auto w-auto flex-shrink-0 rounded-sm">
                             {% endif %}
-                            <div class="flex-1 min-w-0">
+                            <div class="flex-1 min-w-0 flex items-center gap-2">
                                 <p class="font-medium text-white text-sm truncate">{{ country.name }}</p>
-                                <p class="text-white/40 text-xs">€{{ country.price|number_format(1) }}m</p>
+                                <p class="text-white/40 text-xs whitespace-nowrap">€{{ country.price|number_format(1) }}m</p>
                             </div>
                         </label>
                     {% endfor %}
