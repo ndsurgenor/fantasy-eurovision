@@ -733,7 +733,7 @@ class AdminController extends BaseController
     private function fetchCountriesByGroup(\PDO $pdo, int $contestId): array
     {
         $stmt = $pdo->prepare(
-            'SELECT * FROM countries WHERE contest_id = ? ORDER BY running_order, name'
+            'SELECT * FROM countries WHERE contest_id = ? ORDER BY price DESC, name'
         );
         $stmt->execute([$contestId]);
         $byGroup = [];
