@@ -4,7 +4,7 @@
 
 {% block content %}
     <h1 class="text-3xl text-white mb-2 tracking-tight">Pick Your Team</h1>
-    <p class="text-white/75 mb-6">Choose 8 countries from the groups below. You must pick at least 1 and no more than 2 from each group{% if groups|filter(g => g.is_wildcard)|length > 0 %}; these rules do not apply to the Wildcard group{% endif %}.</p>
+    <p class="text-white/85 mb-6">Choose 8 countries from the groups below. You must pick at least 1 and no more than 2 from each group{% if groups|filter(g => g.is_wildcard)|length > 0 %}; these rules do not apply to the Wildcard group{% endif %}.</p>
 
     {% if errors is defined and errors %}
         <div class="bg-rose-500/20 border border-rose-500/40 rounded-lg px-4 py-3 mb-6">
@@ -20,22 +20,22 @@
 
         {# Budget / picks tracker #}
         <div class="bg-stage-900 border border-white/10 rounded-xl p-4 mb-6 flex flex-wrap gap-6 text-sm">
-            <div>
-                <span class="text-white/40">Picks:</span>
-                <span id="picks-count" class="font-bold text-white ml-1">0</span>
-                <span class="text-white/40"> / 8</span>
+            <div class="flex items-baseline gap-1">
+                <span class="text-white/85">Picks:</span>
+                <span id="picks-count" class="font-bold text-white tabular-nums inline-block w-4 text-right">0</span>
+                <span class="text-white/85">/ 8</span>
             </div>
-            <div>
-                <span class="text-white/40">Budget:</span>
-                <span class="text-white/60 ml-1">€{{ contest.budget_limit|number_format(1) }}m</span>
+            <div class="flex items-baseline gap-1">
+                <span class="text-white/85">Budget:</span>
+                <span class="font-bold text-white tabular-nums inline-block w-14 text-right">€{{ contest.budget_limit|number_format(1) }}m</span>
             </div>
-            <div>
-                <span class="text-white/40">Spent:</span>
-                <span id="budget-spent" class="font-bold text-white ml-1">€0.0m</span>
+            <div class="flex items-baseline gap-1">
+                <span class="text-white/85">Spent:</span>
+                <span id="budget-spent" class="font-bold text-white tabular-nums inline-block w-14 text-right">€0.0m</span>
             </div>
-            <div>
-                <span class="text-white/40">Remaining:</span>
-                <span id="budget-remaining" class="font-bold text-emerald-400 ml-1">€{{ contest.budget_limit|number_format(1) }}m</span>
+            <div class="flex items-baseline gap-1">
+                <span class="text-white/85">Remaining:</span>
+                <span id="budget-remaining" class="font-bold text-emerald-400 tabular-nums inline-block w-16 text-right">€{{ contest.budget_limit|number_format(1) }}m</span>
             </div>
         </div>
 
@@ -47,7 +47,7 @@
                     {% if group.is_wildcard %}
                         <span class="text-xs bg-emerald-400/20 text-emerald-400 font-bold px-2 py-0.5 rounded-full">Wildcard (optional)</span>
                     {% else %}
-                        <span class="text-xs text-white/40">
+                        <span class="text-xs text-white/85">
                             Picks: <span data-group-display="{{ group.id }}" class="font-semibold text-white">0</span> / 2
                         </span>
                     {% endif %}
@@ -68,7 +68,7 @@
                             {% endif %}
                             <div class="flex-1 min-w-0 flex items-center gap-2">
                                 <p class="font-medium text-white text-sm truncate">{{ country.name }}</p>
-                                <p class="text-white/40 text-xs whitespace-nowrap">€{{ country.price|number_format(1) }}m</p>
+                                <p class="text-white/85 text-xs whitespace-nowrap">€{{ country.price|number_format(1) }}m</p>
                             </div>
                         </label>
                     {% endfor %}

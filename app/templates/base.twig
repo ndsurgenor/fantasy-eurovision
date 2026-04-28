@@ -19,30 +19,30 @@
                 {% if is_logged_in %}
                     {% if is_admin %}
                         <a href="/admin"
-                           class="{% if current_path starts with '/admin' %}text-fuchsia-400 font-semibold{% else %}text-white/60 hover:text-white{% endif %} transition">
+                           class="{% if current_path starts with '/admin' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-white{% endif %} transition">
                             CMS
                         </a>
                     {% else %}
                         <a href="/my-team"
-                           class="{% if current_path == '/my-team' %}text-fuchsia-400 font-semibold{% else %}text-white/60 hover:text-white{% endif %} transition">
+                           class="{% if current_path == '/my-team' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-white{% endif %} transition">
                             My Team
                         </a>
                         {% if contest and contest.status in ['closed', 'finished'] %}
                             <a href="/leaderboard"
-                               class="{% if current_path == '/leaderboard' %}text-fuchsia-400 font-semibold{% else %}text-white/60 hover:text-white{% endif %} transition">
+                               class="{% if current_path == '/leaderboard' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-white{% endif %} transition">
                                 Leaderboard
                             </a>
                         {% endif %}
                     {% endif %}
-                    <span class="text-white/40">{{ user_name }}</span>
-                    <a href="/logout" class="text-white/60 hover:text-white transition">Log out</a>
+                    <span class="text-white/85">{{ user_name }}</span>
+                    <a href="/logout" class="text-white/85 hover:text-white transition">Log out</a>
                 {% else %}
                     <a href="/login"
-                       class="{% if current_path == '/login' %}text-fuchsia-400 font-semibold{% else %}text-white/60 hover:text-white{% endif %} transition">
+                       class="{% if current_path == '/login' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-white{% endif %} transition">
                         Log in
                     </a>
                     <a href="/register"
-                       class="{% if current_path == '/register' %}text-fuchsia-400 font-semibold{% else %}text-white/60 hover:text-white{% endif %} transition">
+                       class="{% if current_path == '/register' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-white{% endif %} transition">
                         Register
                     </a>
                 {% endif %}
@@ -65,7 +65,7 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-stage-900 border-t border-white/10 text-center text-white/40 text-sm py-4">
+    <footer class="bg-stage-900 border-t border-white/10 text-center text-white/85 text-sm py-4">
         &copy; {{ current_year }} {{ site_name }}
     </footer>
 

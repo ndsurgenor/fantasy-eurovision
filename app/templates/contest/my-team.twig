@@ -10,14 +10,14 @@
         {% elseif is_closed %}
             <span class="bg-fuchsia-500/20 text-fuchsia-400 text-sm font-semibold px-3 py-1 rounded-full">Closed</span>
         {% else %}
-            <span class="bg-white/10 text-white/60 text-sm font-semibold px-3 py-1 rounded-full">Open</span>
+            <span class="bg-white/10 text-white/85 text-sm font-semibold px-3 py-1 rounded-full">Open</span>
         {% endif %}
     </div>
 
     <div class="bg-stage-900 border border-white/10 rounded-xl overflow-hidden mb-6">
         <table class="w-full text-sm">
             <thead>
-                <tr class="bg-white/5 text-white/40 text-xs uppercase tracking-wider">
+                <tr class="bg-white/5 text-white/85 text-xs uppercase tracking-wider">
                     <th class="px-4 py-3 text-left">Country</th>
                     <th class="px-4 py-3 text-left hidden sm:table-cell">Group</th>
                     <th class="px-4 py-3 text-right hidden sm:table-cell">Price</th>
@@ -36,10 +36,10 @@
                             {% endif %}
                             {{ pick.name }}
                         </td>
-                        <td class="px-4 py-3 text-white/75 hidden sm:table-cell">{{ pick.group_name }}</td>
-                        <td class="px-4 py-3 text-right text-white/75 hidden sm:table-cell">€{{ pick.price|number_format(1) }}m</td>
+                        <td class="px-4 py-3 text-white/85 hidden sm:table-cell">{{ pick.group_name }}</td>
+                        <td class="px-4 py-3 text-right text-white/85 hidden sm:table-cell">€{{ pick.price|number_format(1) }}m</td>
                         {% if is_finished %}
-                            <td class="px-4 py-3 text-right text-white/75">
+                            <td class="px-4 py-3 text-right text-white/85">
                                 {% if pick.final_score_raw is not null %}
                                     {{ pick.final_score_raw }}
                                 {% else %}
@@ -59,7 +59,7 @@
             {% if is_finished %}
                 <tfoot>
                     <tr class="bg-white/5 font-bold">
-                        <td class="px-4 py-3 text-white/60" colspan="{% if is_finished %}3{% else %}2{% endif %}">Total</td>
+                        <td class="px-4 py-3 text-white/85" colspan="{% if is_finished %}3{% else %}2{% endif %}">Total</td>
                         <td class="px-4 py-3 text-right"></td>
                         <td class="px-4 py-3 text-right text-emerald-400 text-base">{{ total_score }}</td>
                     </tr>
@@ -68,7 +68,7 @@
         </table>
     </div>
 
-    <div class="flex flex-wrap gap-4 text-sm text-white/75">
+    <div class="flex flex-wrap gap-4 text-sm text-white/85">
         <span>Budget spent: <strong class="text-white">€{{ entry.total_cost|number_format(1) }}m</strong></span>
         {% if is_finished %}
             <span>Total score: <strong class="text-emerald-400">{{ total_score }}</strong></span>

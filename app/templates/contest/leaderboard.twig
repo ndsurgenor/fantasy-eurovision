@@ -6,15 +6,15 @@
     <h1 class="text-3xl text-white mb-2 tracking-tight">Leaderboard</h1>
 
     {% if not is_finished %}
-        <p class="text-white/75 text-sm mb-6">Scores will appear here once the contest is finished.</p>
+        <p class="text-white/85 text-sm mb-6">Scores will appear here once the contest is finished.</p>
     {% else %}
-        <p class="text-white/75 text-sm mb-6">Final standings — ranked by score, then by cost (lower is better).</p>
+        <p class="text-white/85 text-sm mb-6">Final standings — ranked by score, then by cost (lower is better).</p>
     {% endif %}
 
     <div class="bg-stage-900 border border-white/10 rounded-xl overflow-hidden">
         <table class="w-full text-sm">
             <thead>
-                <tr class="bg-white/5 text-white/40 text-xs uppercase tracking-wider">
+                <tr class="bg-white/5 text-white/85 text-xs uppercase tracking-wider">
                     <th class="px-4 py-3 text-left w-10">#</th>
                     <th class="px-4 py-3 text-left">Player</th>
                     <th class="px-4 py-3 text-right hidden sm:table-cell">Cost</th>
@@ -26,7 +26,7 @@
             <tbody class="divide-y divide-white/10">
                 {% for entry in entries %}
                     <tr class="{% if entry.user_id == current_user_id %}bg-fuchsia-500/10 font-semibold{% else %}hover:bg-white/5{% endif %} transition">
-                        <td class="px-4 py-3 text-white/40">
+                        <td class="px-4 py-3 text-white/85">
                             {% if loop.index == 1 and is_finished %}🥇
                             {% elseif loop.index == 2 and is_finished %}🥈
                             {% elseif loop.index == 3 and is_finished %}🥉
@@ -38,7 +38,7 @@
                                 <span class="text-xs text-fuchsia-400 ml-1">(you)</span>
                             {% endif %}
                         </td>
-                        <td class="px-4 py-3 text-right text-white/75 hidden sm:table-cell">
+                        <td class="px-4 py-3 text-right text-white/85 hidden sm:table-cell">
                             €{{ entry.total_cost|number_format(1) }}m
                         </td>
                         {% if is_finished %}

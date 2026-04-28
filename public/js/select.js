@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn  = document.getElementById('submit-btn');
     const picksCount = document.getElementById('picks-count');
     const budgetSpent = document.getElementById('budget-spent');
-    const budgetRem  = document.getElementById('budget-remaining');
+    const budgetRem   = document.getElementById('budget-remaining');
 
     function groupCounts(checked) {
         const counts = {};
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         budgetRem.textContent   = `${remaining < 0 ? '-' : ''}€${Math.abs(remaining).toFixed(1)}m`;
 
         // Colour remaining amount
-        budgetRem.classList.remove('text-red-400', 'text-yellow-400', 'text-emerald-400', 'text-white');
+        budgetRem.classList.remove('text-red-400', 'text-yellow-400', 'text-emerald-400');
         if (remaining < 0) {
             budgetRem.classList.add('text-red-400');
         } else if (remaining < 5) {
