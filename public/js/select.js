@@ -1,12 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const form       = document.getElementById('team-form');
-    const BUDGET     = parseFloat(form.dataset.budget);
-    const REQUIRED   = parseInt(form.dataset.requiredPicks, 10);
-    const checkboxes = [...form.querySelectorAll('.country-checkbox')];
-    const submitBtn  = document.getElementById('submit-btn');
-    const picksCount = document.getElementById('picks-count');
-    const budgetSpent = document.getElementById('budget-spent');
-    const budgetRem   = document.getElementById('budget-remaining');
+    const form          = document.getElementById('team-form');
+    const BUDGET        = parseFloat(form.dataset.budget);
+    const REQUIRED      = parseInt(form.dataset.requiredPicks, 10);
+    const checkboxes    = [...form.querySelectorAll('.country-checkbox')];
+    const submitBtn     = document.getElementById('submit-btn');
+    const countriesCount = document.getElementById('countries-count');
+    const groupsCount   = document.getElementById('groups-count');
+    const budgetSpent   = document.getElementById('budget-spent');
+    const budgetRem     = document.getElementById('budget-remaining');
+
+    const allGroupSections  = [...document.querySelectorAll('[data-group-container]')];
+    const nonWildcardGroups = allGroupSections.filter(s => s.dataset.isWildcard !== '1');
+    const TOTAL_GROUPS      = nonWildcardGroups.length;
 
     function groupCounts(checked) {
         const counts = {};
@@ -24,8 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const remaining = BUDGET - spent;
         const counts    = groupCounts(checked);
 
-        // Update counters
-        picksCount.textContent  = count;
+        // Countries counter (all picks, including wildcard)
+        countriesCount.textContent = `${count}/${REQUIRED}`;
+
+        // Groups counter (non-wildcard groups with ≥1 pick / total non-wildcard groups)
+        const groupsFilled = nonWildcardGroups.filter(s => (counts[s.dataset.groupId] || 0) > 0).length;
+        groupsCount.textContent = `${groupsFilled}/${TOTAL_GROUPS}`;
+
+        // Budget counters
         budgetSpent.textContent = `€${spent.toFixed(1)}m`;
         budgetRem.textContent   = `${remaining < 0 ? '-' : ''}€${Math.abs(remaining).toFixed(1)}m`;
 
@@ -42,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update per-group displays and validity
         let valid = (count === REQUIRED) && (remaining >= 0);
 
-        document.querySelectorAll('[data-group-container]').forEach(section => {
+        allGroupSections.forEach(section => {
             const gid        = section.dataset.groupId;
             const isWildcard = section.dataset.isWildcard === '1';
             const max        = isWildcard ? 1 : 2;

@@ -4,7 +4,8 @@
 
 {% block content %}
     <h1 class="text-3xl text-white mb-2 tracking-tight">Pick Your Team</h1>
-    <p class="text-white/85 mb-6">Choose 8 countries from the groups below. You must pick at least 1 and no more than 2 from each group{% if groups|filter(g => g.is_wildcard)|length > 0 %}; these rules do not apply to the Wildcard group{% endif %}.</p>
+    <p class="text-white/85 mb-1">Choose exactly 8 countries with a total value of no more than €{{ contest.budget_limit|number_format(1) }}m from the groups below.</p>
+    <p class="text-white/85 mb-6">You must pick at least 1 and no more than 2 from each group.</p>
 
     {% if errors is defined and errors %}
         <div class="bg-rose-500/20 border border-rose-500/40 rounded-lg px-4 py-3 mb-6">
@@ -21,13 +22,12 @@
         {# Budget / picks tracker #}
         <div class="bg-stage-900 border border-white/10 rounded-xl p-4 mb-6 flex flex-wrap gap-6 text-sm">
             <div class="flex items-baseline gap-1">
-                <span class="text-white/85">Picks:</span>
-                <span id="picks-count" class="font-bold text-white tabular-nums inline-block w-4 text-right">0</span>
-                <span class="text-white/85">/ 8</span>
+                <span class="text-white/85">Countries:</span>
+                <span id="countries-count" class="font-bold text-white tabular-nums inline-block w-8 text-right">0/8</span>
             </div>
             <div class="flex items-baseline gap-1">
-                <span class="text-white/85">Budget:</span>
-                <span class="font-bold text-white tabular-nums inline-block w-14 text-right">€{{ contest.budget_limit|number_format(1) }}m</span>
+                <span class="text-white/85">Groups:</span>
+                <span id="groups-count" class="font-bold text-white tabular-nums inline-block w-8 text-right">0/0</span>
             </div>
             <div class="flex items-baseline gap-1">
                 <span class="text-white/85">Spent:</span>
@@ -48,7 +48,7 @@
                         <span class="text-xs bg-emerald-400/20 text-emerald-400 font-bold px-2 py-0.5 rounded-full">Wildcard (optional)</span>
                     {% else %}
                         <span class="text-xs text-white/85">
-                            Picks: <span data-group-display="{{ group.id }}" class="font-semibold text-white">0</span> / 2
+                            Picks: <span data-group-display="{{ group.id }}" class="font-semibold text-white">0/2</span>
                         </span>
                     {% endif %}
                 </div>
