@@ -20,7 +20,7 @@
           data-required-picks="8">
 
         {# Budget / picks tracker #}
-        <div class="bg-stage-900 border border-white/10 rounded-xl p-4 mb-6 flex flex-wrap gap-6 text-sm">
+        <div class="bg-stage-900 border border-white/10 rounded-xl p-4 mb-6 flex flex-wrap gap-x-6 gap-y-2 text-sm sticky top-4 z-10">
             <div class="flex items-baseline gap-1">
                 <span class="text-white/85">Countries:</span>
                 <span id="countries-count" class="font-bold text-white tabular-nums inline-block w-8 text-right">0/8</span>
@@ -29,6 +29,7 @@
                 <span class="text-white/85">Groups:</span>
                 <span id="groups-count" class="font-bold text-white tabular-nums inline-block w-8 text-right">0/0</span>
             </div>
+            <div class="w-full sm:hidden"></div>
             <div class="flex items-baseline gap-1">
                 <span class="text-white/85">Spent:</span>
                 <span id="budget-spent" class="font-bold text-white tabular-nums inline-block w-14 text-right">€0.0m</span>
