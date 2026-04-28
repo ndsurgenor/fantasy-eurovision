@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const picksCount = document.getElementById('picks-count');
     const budgetSpent = document.getElementById('budget-spent');
     const budgetRem  = document.getElementById('budget-remaining');
-    const budgetWrap = document.getElementById('budget-remaining-wrap');
 
     function groupCounts(checked) {
         const counts = {};
@@ -26,21 +25,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const counts    = groupCounts(checked);
 
         // Update counters
-        picksCount.textContent    = count;
-        budgetSpent.textContent   = spent.toFixed(2);
-        budgetRem.textContent     = Math.abs(remaining).toFixed(2);
-
-        // Prefix sign on remaining
-        budgetWrap.firstChild.textContent = remaining < 0 ? '-€' : '€';
+        picksCount.textContent  = count;
+        budgetSpent.textContent = `€${spent.toFixed(1)}m`;
+        budgetRem.textContent   = `${remaining < 0 ? '-' : ''}€${Math.abs(remaining).toFixed(1)}m`;
 
         // Colour remaining amount
-        budgetWrap.classList.remove('text-red-400', 'text-yellow-400', 'text-white');
+        budgetRem.classList.remove('text-red-400', 'text-yellow-400', 'text-emerald-400', 'text-white');
         if (remaining < 0) {
-            budgetWrap.classList.add('text-red-400');
+            budgetRem.classList.add('text-red-400');
         } else if (remaining < 5) {
-            budgetWrap.classList.add('text-yellow-400');
+            budgetRem.classList.add('text-yellow-400');
         } else {
-            budgetWrap.classList.add('text-white');
+            budgetRem.classList.add('text-emerald-400');
         }
 
         // Update per-group displays and validity

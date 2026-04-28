@@ -36,10 +36,10 @@
                             {% endif %}
                             {{ pick.name }}
                         </td>
-                        <td class="px-4 py-3 text-white/50 hidden sm:table-cell">{{ pick.group_name }}</td>
-                        <td class="px-4 py-3 text-right text-white/50 hidden sm:table-cell">€{{ pick.price|number_format(1) }}m</td>
+                        <td class="px-4 py-3 text-white/75 hidden sm:table-cell">{{ pick.group_name }}</td>
+                        <td class="px-4 py-3 text-right text-white/75 hidden sm:table-cell">€{{ pick.price|number_format(1) }}m</td>
                         {% if is_finished %}
-                            <td class="px-4 py-3 text-right text-white/50">
+                            <td class="px-4 py-3 text-right text-white/75">
                                 {% if pick.final_score_raw is not null %}
                                     {{ pick.final_score_raw }}
                                 {% else %}
@@ -68,7 +68,7 @@
         </table>
     </div>
 
-    <div class="flex flex-wrap gap-4 text-sm text-white/50">
+    <div class="flex flex-wrap gap-4 text-sm text-white/75">
         <span>Budget spent: <strong class="text-white">€{{ entry.total_cost|number_format(1) }}m</strong></span>
         {% if is_finished %}
             <span>Total score: <strong class="text-emerald-400">{{ total_score }}</strong></span>

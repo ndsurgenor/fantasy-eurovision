@@ -6,9 +6,9 @@
     <h1 class="text-3xl text-white mb-2 tracking-tight">Leaderboard</h1>
 
     {% if not is_finished %}
-        <p class="text-white/50 text-sm mb-6">Scores will appear here once the contest is finished.</p>
+        <p class="text-white/75 text-sm mb-6">Scores will appear here once the contest is finished.</p>
     {% else %}
-        <p class="text-white/50 text-sm mb-6">Final standings — ranked by score, then by cost (lower is better).</p>
+        <p class="text-white/75 text-sm mb-6">Final standings — ranked by score, then by cost (lower is better).</p>
     {% endif %}
 
     <div class="bg-stage-900 border border-white/10 rounded-xl overflow-hidden">
@@ -38,7 +38,7 @@
                                 <span class="text-xs text-fuchsia-400 ml-1">(you)</span>
                             {% endif %}
                         </td>
-                        <td class="px-4 py-3 text-right text-white/50 hidden sm:table-cell">
+                        <td class="px-4 py-3 text-right text-white/75 hidden sm:table-cell">
                             €{{ entry.total_cost|number_format(1) }}m
                         </td>
                         {% if is_finished %}
