@@ -243,7 +243,7 @@ class ContestController extends BaseController
         $stmt->execute([$contestId]);
         $groups = $stmt->fetchAll();
 
-        $stmt = $pdo->prepare('SELECT * FROM countries WHERE contest_id = ? ORDER BY running_order, name');
+        $stmt = $pdo->prepare('SELECT * FROM countries WHERE contest_id = ? ORDER BY price DESC, name ASC');
         $stmt->execute([$contestId]);
         $countriesByGroup = [];
         foreach ($stmt->fetchAll() as $c) {
