@@ -95,4 +95,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     checkboxes.forEach(cb => cb.addEventListener('change', update));
     update(); // set initial state on page load
+
+    // View toggle: groups vs running order
+    const viewGroupsBtn  = document.getElementById('view-groups');
+    const viewOrderBtn   = document.getElementById('view-order');
+    const orderContainer = document.getElementById('order-container');
+    const allLabels      = [...form.querySelectorAll('label[data-running-order]')];
+    const labelParent    = new Map(allLabels.map(l => [l, l.parentElement]));
+
+    function setView(view) {
+        if (view === 'order') {
+            const sorted = [...allLabels].sort((a, b) => {
+                const ra = parseInt(a.dataset.runningOrder, 10) || 9999;
+                const rb = parseInt(b.dataset.runningOrder, 10) || 9999;
+                return ra - rb;
+            });
+
+            const grid = document.createElement('div');
+            grid.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3';
+            sorted.forEach(label => {
+                const ro     = parseInt(label.dataset.runningOrder, 10);
+                const badge  = label.querySelector('.ro-number');
+                if (badge) badge.textContent = ro || '—';
+                grid.appendChild(label);
+            });
+
+            orderContainer.innerHTML = '';
+            orderContainer.appendChild(grid);
+
+            form.querySelectorAll('.ro-number').forEach(el => el.classList.remove('hidden'));
+            form.querySelectorAll('.ro-group-name').forEach(el => el.classList.remove('hidden'));
+
+            allGroupSections.forEach(s => s.classList.add('hidden'));
+            orderContainer.classList.remove('hidden');
+
+            viewGroupsBtn.classList.remove('bg-white/20', 'text-white');
+            viewGroupsBtn.classList.add('text-white/50');
+            viewOrderBtn.classList.add('bg-white/20', 'text-white');
+            viewOrderBtn.classList.remove('text-white/50', 'hover:text-white/85', 'hover:bg-white/10');
+        } else {
+            allLabels.forEach(label => labelParent.get(label).appendChild(label));
+
+            form.querySelectorAll('.ro-number').forEach(el => el.classList.add('hidden'));
+            form.querySelectorAll('.ro-group-name').forEach(el => el.classList.add('hidden'));
+
+            allGroupSections.forEach(s => s.classList.remove('hidden'));
+            orderContainer.classList.add('hidden');
+
+            viewOrderBtn.classList.remove('bg-white/20', 'text-white');
+            viewOrderBtn.classList.add('text-white/50', 'hover:text-white/85', 'hover:bg-white/10');
+            viewGroupsBtn.classList.add('bg-white/20', 'text-white');
+            viewGroupsBtn.classList.remove('text-white/50');
+        }
+    }
+
+    viewGroupsBtn.addEventListener('click', () => setView('groups'));
+    viewOrderBtn.addEventListener('click',  () => setView('order'));
 });
