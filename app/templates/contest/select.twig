@@ -75,7 +75,6 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     {% for country in countries_by_group[group.id] ?? [] %}
                         <label data-running-order="{{ country.running_order ?? 0 }}"
-                               data-group-name="{{ group.name }}"
                                class="flex items-center gap-3 bg-stage-900 border border-white/10 rounded-lg p-3 cursor-pointer hover:border-fuchsia-500/60 transition has-[:checked]:border-fuchsia-500 has-[:checked]:bg-fuchsia-500/10">
                             <span class="ro-number hidden text-white/85 text-xs font-bold tabular-nums w-5 text-center flex-shrink-0"></span>
                             <input type="checkbox"
@@ -89,10 +88,7 @@
                                 <img src="/uploads/flags/{{ country.flag_image }}" alt="{{ country.name }}" class="h-auto w-auto flex-shrink-0 rounded-sm">
                             {% endif %}
                             <div class="flex-1 min-w-0 flex items-center justify-between gap-2">
-                                <div class="min-w-0 flex-1">
-                                    <p class="font-medium text-white text-sm truncate">{{ country.name }}</p>
-                                    <p class="ro-group-name hidden text-fuchsia-400 text-xs truncate">{{ group.name }}</p>
-                                </div>
+                                <p class="font-medium text-white text-sm truncate min-w-0">{{ country.name }}</p>
                                 <p class="text-white/85 text-xs whitespace-nowrap flex-shrink-0">€{{ country.price|number_format(1) }}m</p>
                             </div>
                         </label>
@@ -104,7 +100,7 @@
         {# Running order view container — populated by JS #}
         <div id="order-container" class="hidden mb-6"></div>
 
-        <div class="mt-6">
+        <div class="mt-6 text-center">
             <button type="submit" id="submit-btn" disabled
                     class="bg-gradient-to-r from-fuchsia-500 to-purple-600 hover:from-fuchsia-400 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-lg transition text-base">
                 Submit My Team

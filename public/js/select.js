@@ -111,20 +111,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 return ra - rb;
             });
 
-            const grid = document.createElement('div');
-            grid.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3';
-            sorted.forEach(label => {
-                const ro     = parseInt(label.dataset.runningOrder, 10);
-                const badge  = label.querySelector('.ro-number');
-                if (badge) badge.textContent = ro || '—';
-                grid.appendChild(label);
+            const half    = Math.ceil(sorted.length / 2);
+            const wrapper = document.createElement('div');
+            wrapper.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+
+            [sorted.slice(0, half), sorted.slice(half)].forEach(col => {
+                const colDiv = document.createElement('div');
+                colDiv.className = 'flex flex-col gap-3';
+                col.forEach(label => {
+                    const ro    = parseInt(label.dataset.runningOrder, 10);
+                    const badge = label.querySelector('.ro-number');
+                    if (badge) badge.textContent = ro || '—';
+                    colDiv.appendChild(label);
+                });
+                wrapper.appendChild(colDiv);
             });
 
+            const heading = document.createElement('h2');
+            heading.className = 'text-lg text-fuchsia-400 mb-3 text-center';
+            heading.textContent = 'Running Order';
+
             orderContainer.innerHTML = '';
-            orderContainer.appendChild(grid);
+            orderContainer.appendChild(heading);
+            orderContainer.appendChild(wrapper);
 
             form.querySelectorAll('.ro-number').forEach(el => el.classList.remove('hidden'));
-            form.querySelectorAll('.ro-group-name').forEach(el => el.classList.remove('hidden'));
 
             allGroupSections.forEach(s => s.classList.add('hidden'));
             orderContainer.classList.remove('hidden');
@@ -137,7 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
             allLabels.forEach(label => labelParent.get(label).appendChild(label));
 
             form.querySelectorAll('.ro-number').forEach(el => el.classList.add('hidden'));
-            form.querySelectorAll('.ro-group-name').forEach(el => el.classList.add('hidden'));
 
             allGroupSections.forEach(s => s.classList.remove('hidden'));
             orderContainer.classList.add('hidden');
