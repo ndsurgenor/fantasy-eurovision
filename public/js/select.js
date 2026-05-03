@@ -104,6 +104,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const priceContainer = document.getElementById('price-container');
     const allLabels      = [...form.querySelectorAll('label[data-running-order]')];
     const labelParent    = new Map(allLabels.map(l => [l, l.parentElement]));
+
+    // Pre-compute per-group min/max prices
+    const groupPrices = {};
+    allLabels.forEach(label => {
+        const cb  = label.querySelector('.country-checkbox');
+        const gid = cb.dataset.groupId;
+        const p   = parseFloat(cb.dataset.price);
+        if (!groupPrices[gid]) groupPrices[gid] = { min: p, max: p };
+        else {
+            groupPrices[gid].min = Math.min(groupPrices[gid].min, p);
+            groupPrices[gid].max = Math.max(groupPrices[gid].max, p);
+        }
+    });
     const viewBtns       = [viewGroupsBtn, viewOrderBtn, viewPriceBtn];
 
     function setActiveBtn(activeBtn) {
@@ -143,6 +156,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Always restore labels to their original group containers first
         allLabels.forEach(label => labelParent.get(label).appendChild(label));
         form.querySelectorAll('.ro-number').forEach(el => el.classList.add('hidden'));
+        form.querySelectorAll('.price-rank-icon').forEach(el => {
+            el.classList.add('hidden');
+            el.classList.remove('text-red-400', 'text-emerald-400');
+        });
+        form.querySelectorAll('.price-name').forEach(el => {
+            el.classList.remove('w-40', 'flex-shrink-0');
+            el.classList.add('min-w-0');
+        });
         allGroupSections.forEach(s => s.classList.remove('hidden'));
         orderContainer.classList.add('hidden');
         priceContainer.classList.add('hidden');
@@ -165,14 +186,49 @@ document.addEventListener('DOMContentLoaded', () => {
             setActiveBtn(viewOrderBtn);
 
         } else if (view === 'price') {
+            form.querySelectorAll('.price-name').forEach(el => {
+                el.classList.remove('min-w-0');
+                el.classList.add('w-40', 'flex-shrink-0');
+            });
+
             const sorted = [...allLabels].sort((a, b) => {
                 const pa = parseFloat(a.querySelector('.country-checkbox').dataset.price);
                 const pb = parseFloat(b.querySelector('.country-checkbox').dataset.price);
                 if (pb !== pa) return pb - pa;
-                return a.querySelector('p.font-medium').textContent.trim()
-                    .localeCompare(b.querySelector('p.font-medium').textContent.trim());
+                return a.querySelector('.price-name').textContent.trim()
+                    .localeCompare(b.querySelector('.price-name').textContent.trim());
             });
+
+            sorted.forEach(label => {
+                const cb    = label.querySelector('.country-checkbox');
+                const gid   = cb.dataset.groupId;
+                const price = parseFloat(cb.dataset.price);
+                const icon  = label.querySelector('.price-rank-icon');
+                const { min, max } = groupPrices[gid];
+                const isMax = price === max;
+                const isMin = price === min;
+
+                if (icon && min !== max) {
+                    if (isMax) {
+                        icon.classList.remove('hidden');
+                        icon.classList.add('text-red-400');
+                        icon.title = icon.dataset.group;
+                    } else if (isMin) {
+                        icon.classList.remove('hidden');
+                        icon.classList.add('text-emerald-400');
+                        icon.title = icon.dataset.group;
+                    }
+                }
+            });
+
             buildTwoColView(sorted, priceContainer, 'Price Order');
+
+            const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 inline-block"><path fill-rule="evenodd" d="M10 1C13.866 1 17 2.79086 17 5C17 7.20914 13.866 9 10 9C6.13401 9 3 7.20914 3 5C3 2.79086 6.13401 1 10 1ZM15.694 9.13079C16.1576 8.86588 16.6044 8.54736 17 8.17775V10C17 12.2091 13.866 14 10 14C6.13401 14 3 12.2091 3 10V8.17775C3.3956 8.54736 3.84244 8.86588 4.30604 9.13079C5.83803 10.0062 7.85433 10.5 10 10.5C12.1457 10.5 14.162 10.0062 15.694 9.13079ZM3 13.1777V15C3 17.2091 6.13401 19 10 19C13.866 19 17 17.2091 17 15V13.1777C16.6044 13.5474 16.1576 13.8659 15.694 14.1308C14.162 15.0062 12.1457 15.5 10 15.5C7.85433 15.5 5.83803 15.0062 4.30604 14.1308C3.84244 13.8659 3.3956 13.5474 3 13.1777Z" clip-rule="evenodd"/></svg>`;
+            const key = document.createElement('div');
+            key.className = 'flex justify-center gap-6 mb-4 text-xs text-white/85';
+            key.innerHTML = `<span class="flex items-center gap-1.5"><span class="text-red-400">${iconSvg}</span> Most expensive in group</span><span class="flex items-center gap-1.5"><span class="text-emerald-400">${iconSvg}</span> Least expensive in group</span><span>(Hover over icons to view relevant group names)</span>`;
+            priceContainer.insertBefore(key, priceContainer.children[1]);
+
             allGroupSections.forEach(s => s.classList.add('hidden'));
             priceContainer.classList.remove('hidden');
             setActiveBtn(viewPriceBtn);

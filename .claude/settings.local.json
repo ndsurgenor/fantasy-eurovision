@@ -21,7 +21,9 @@
       "Bash(npm run *)",
       "WebFetch(domain:www.eurovision.tv)",
       "WebSearch",
-      "Bash(C:/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe *)"
+      "Bash(C:/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe *)",
+      "WebFetch(domain:heroicons.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ]
   }
 }
