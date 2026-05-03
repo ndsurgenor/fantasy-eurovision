@@ -39,20 +39,27 @@
                 <span id="budget-remaining" class="font-bold text-emerald-400 tabular-nums inline-block w-16 text-right">€{{ contest.budget_limit|number_format(1) }}m</span>
             </div>
             <div class="ml-auto flex items-center self-center">
-                <div class="flex items-center border border-white/20 rounded-lg overflow-hidden text-xs">
+                <div class="grid grid-cols-3 border border-white/20 rounded-lg overflow-hidden text-xs">
                     <button type="button" id="view-groups" title="Group view"
-                            class="flex items-center gap-1.5 px-2.5 py-1.5 bg-white/20 text-white transition">
+                            class="flex justify-center items-center gap-1.5 px-2.5 py-1.5 bg-white/20 text-white transition">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
                             <path fill-rule="evenodd" d="M4.25 2A2.25 2.25 0 0 0 2 4.25v2.5A2.25 2.25 0 0 0 4.25 9h2.5A2.25 2.25 0 0 0 9 6.75v-2.5A2.25 2.25 0 0 0 6.75 2h-2.5zm0 9A2.25 2.25 0 0 0 2 13.25v2.5A2.25 2.25 0 0 0 4.25 18h2.5A2.25 2.25 0 0 0 9 15.75v-2.5A2.25 2.25 0 0 0 6.75 11h-2.5zm9-9A2.25 2.25 0 0 0 11 4.25v2.5A2.25 2.25 0 0 0 13.25 9h2.5A2.25 2.25 0 0 0 18 6.75v-2.5A2.25 2.25 0 0 0 15.75 2h-2.5zm0 9A2.25 2.25 0 0 0 11 13.25v2.5A2.25 2.25 0 0 0 13.25 18h2.5A2.25 2.25 0 0 0 18 15.75v-2.5A2.25 2.25 0 0 0 15.75 11h-2.5z" clip-rule="evenodd" />
                         </svg>
                         Groups
                     </button>
                     <button type="button" id="view-order" title="Running order view"
-                            class="flex items-center gap-1.5 px-2.5 py-1.5 text-white/50 hover:text-white/85 hover:bg-white/10 transition">
+                            class="flex justify-center items-center gap-1.5 px-2.5 py-1.5 text-white/50 hover:text-white/85 hover:bg-white/10 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
                             <path fill-rule="evenodd" d="M6 4.75A.75.75 0 0 1 6.75 4h10.5a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 4.75ZM6 10a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 10Zm0 5.25a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H6.75a.75.75 0 0 1-.75-.75ZM1.99 4.75a1 1 0 0 1 1-1H3a1 1 0 0 1 1 1v.01a1 1 0 0 1-1 1h-.01a1 1 0 0 1-1-1v-.01ZM1.99 15.25a1 1 0 0 1 1-1H3a1 1 0 0 1 1 1v.01a1 1 0 0 1-1 1h-.01a1 1 0 0 1-1-1v-.01ZM1.99 10a1 1 0 0 1 1-1H3a1 1 0 0 1 1 1v.01a1 1 0 0 1-1 1h-.01a1 1 0 0 1-1-1V10Z" clip-rule="evenodd" />
                         </svg>
                         Order
+                    </button>
+                    <button type="button" id="view-price" title="Price order view"
+                            class="flex justify-center items-center gap-1.5 px-2.5 py-1.5 text-white/50 hover:text-white/85 hover:bg-white/10 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                            <path fill-rule="evenodd" d="M5.5 3A2.5 2.5 0 0 0 3 5.5v2.879a2.5 2.5 0 0 0 .732 1.767l6.5 6.5a2.5 2.5 0 0 0 3.536 0l2.878-2.878a2.5 2.5 0 0 0 0-3.536l-6.5-6.5A2.5 2.5 0 0 0 8.38 3H5.5ZM6 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+                        </svg>
+                        Price
                     </button>
                 </div>
             </div>
@@ -76,14 +83,14 @@
                     {% for country in countries_by_group[group.id] ?? [] %}
                         <label data-running-order="{{ country.running_order ?? 0 }}"
                                class="flex items-center gap-3 bg-stage-900 border border-white/10 rounded-lg p-3 cursor-pointer hover:border-fuchsia-500/60 transition has-[:checked]:border-fuchsia-500 has-[:checked]:bg-fuchsia-500/10">
-                            <span class="ro-number hidden text-white/85 text-xs font-bold tabular-nums w-5 text-center flex-shrink-0"></span>
+                            <span class="ro-number hidden text-fuchsia-400 text-xs font-bold tabular-nums w-5 text-center flex-shrink-0"></span>
                             <input type="checkbox"
                                    name="countries[]"
                                    value="{{ country.id }}"
                                    data-price="{{ country.price }}"
                                    data-group-id="{{ country.group_id }}"
                                    {% if country.id in checked_ids %}checked{% endif %}
-                                   class="country-checkbox accent-fuchsia-500 w-4 h-4 flex-shrink-0">
+                                   class="country-checkbox accent-fuchsia-500 w-4 h-4 flex-shrink-0 mr-1">
                             {% if country.flag_image %}
                                 <img src="/uploads/flags/{{ country.flag_image }}" alt="{{ country.name }}" class="h-auto w-auto flex-shrink-0 rounded-sm">
                             {% endif %}
@@ -99,6 +106,9 @@
 
         {# Running order view container — populated by JS #}
         <div id="order-container" class="hidden mb-6"></div>
+
+        {# Price order view container — populated by JS #}
+        <div id="price-container" class="hidden mb-6"></div>
 
         <div class="mt-6 text-center">
             <button type="submit" id="submit-btn" disabled
