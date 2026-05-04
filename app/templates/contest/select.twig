@@ -20,7 +20,7 @@
           data-required-picks="8">
 
         {# Budget / picks tracker #}
-        <div class="bg-stage-900 border border-white/10 rounded-xl p-4 mb-6 flex flex-wrap gap-x-6 gap-y-2 text-sm sticky top-4 z-10">
+        <div class="bg-stage-900 border border-white/10 rounded-xl p-4 mb-6 flex flex-wrap gap-x-6 gap-y-2 items-center text-sm sticky top-4 z-10">
             <div class="flex items-baseline gap-1">
                 <span class="text-white/85">Countries:</span>
                 <span id="countries-count" class="font-bold text-white tabular-nums inline-block w-8 text-right">0/8</span>
@@ -38,7 +38,7 @@
                 <span class="text-white/85">Remaining:</span>
                 <span id="budget-remaining" class="font-bold text-emerald-400 tabular-nums inline-block w-16 text-right">€{{ contest.budget_limit|number_format(1) }}m</span>
             </div>
-            <div class="ml-auto flex items-center self-center">
+            <div class="ml-auto flex items-center">
                 <div class="grid grid-cols-3 border border-white/20 rounded-lg overflow-hidden text-xs">
                     <button type="button" id="view-groups" title="Group view"
                             class="flex justify-center items-center gap-1.5 px-2.5 py-1.5 bg-white/20 text-white transition">
