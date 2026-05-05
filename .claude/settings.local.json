@@ -24,7 +24,8 @@
       "Bash(C:/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe *)",
       "WebFetch(domain:heroicons.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "Bash(Select-Object -First 5)"
+      "Bash(Select-Object -First 5)",
+      "Bash(C:\\\\Program Files\\\\MySQL\\\\MySQL Server 8.0\\\\bin\\\\mysql.exe *)"
     ]
   }
 }

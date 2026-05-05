@@ -3,14 +3,19 @@
 {% block title %}My Team | {{ site_name }}{% endblock %}
 
 {% block content %}
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
         <h1 class="text-3xl text-white tracking-tight">My Team</h1>
-        {% if is_finished %}
+        {% if is_open %}
+            <div class="flex flex-wrap items-center gap-3">
+                {% if launch_date and launch_time %}
+                    <p class="text-sm text-white/85">Updates can be made up until <strong class="text-white">{{ launch_time|date('g:ia') }}</strong> on <strong class="text-white">{{ launch_date|date('l jS F Y') }}</strong></p>
+                {% endif %}
+                <a href="/select" class="bg-gradient-to-r from-fuchsia-600 to-purple-700 hover:from-fuchsia-500 hover:to-purple-600 text-white font-bold py-2 px-6 rounded-lg transition text-sm">Update Team</a>
+            </div>
+        {% elseif is_finished %}
             <span class="bg-emerald-400/20 text-emerald-400 text-sm font-semibold px-3 py-1 rounded-full">Finished</span>
-        {% elseif is_closed %}
-            <span class="bg-fuchsia-500/20 text-fuchsia-400 text-sm font-semibold px-3 py-1 rounded-full">Closed</span>
         {% else %}
-            <span class="bg-white/10 text-white/85 text-sm font-semibold px-3 py-1 rounded-full">Open</span>
+            <p class="text-sm text-white/85">Team selection is now closed.</p>
         {% endif %}
     </div>
 

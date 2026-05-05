@@ -274,12 +274,15 @@ class AdminController extends BaseController
         $status     = trim(    $_POST['status']        ?? '');
         $isActive   = isset($_POST['is_active']) ? 1 : 0;
         $launchDate = trim($_POST['launch_date'] ?? '') ?: null;
+        $launchTime = trim($_POST['launch_time'] ?? '') ?: null;
 
         $errors = [];
         if ($year < 2000 || $year > 2100)             $errors[] = 'Please enter a valid year (2000–2100).';
         if (!$name)                                    $errors[] = 'Contest name is required.';
         if ($budget <= 0)                              $errors[] = 'Budget must be greater than zero.';
         if (!in_array($status, $validStatuses, true))  $errors[] = 'Invalid status.';
+        if (!$launchDate)                              $errors[] = 'Launch date is required.';
+        if (!$launchTime)                              $errors[] = 'Launch time is required.';
 
         if (!empty($errors)) {
             $this->flash('error', implode(' ', $errors));
@@ -294,8 +297,8 @@ class AdminController extends BaseController
         $prevStatus = $contest['status'];
 
         $pdo->prepare(
-            'UPDATE contests SET year=?, name=?, budget_limit=?, status=?, is_active=?, launch_date=? WHERE id=?'
-        )->execute([$year, $name, $budget, $status, $isActive, $launchDate, (int) $contest['id']]);
+            'UPDATE contests SET year=?, name=?, budget_limit=?, status=?, is_active=?, launch_date=?, launch_time=? WHERE id=?'
+        )->execute([$year, $name, $budget, $status, $isActive, $launchDate, $launchTime, (int) $contest['id']]);
 
         // Update inline country fields (catalogue, price, running order)
         if (!empty($_POST['country_price']) && is_array($_POST['country_price'])) {

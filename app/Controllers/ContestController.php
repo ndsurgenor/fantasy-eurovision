@@ -72,9 +72,13 @@ class ContestController extends BaseController
         $pdo  = getDB();
         $stmt = $pdo->prepare('SELECT id FROM entries WHERE user_id = ? AND contest_id = ?');
         $stmt->execute([(int) $_SESSION['user_id'], (int) $contest['id']]);
-        if ($stmt->fetch()) {
-            $this->redirect('/my-team');
-            return;
+        $entry = $stmt->fetch();
+
+        $checkedIds = [];
+        if ($entry) {
+            $stmt = $pdo->prepare('SELECT country_id FROM entry_countries WHERE entry_id = ?');
+            $stmt->execute([(int) $entry['id']]);
+            $checkedIds = array_column($stmt->fetchAll(), 'country_id');
         }
 
         [$groups, $countriesByGroup] = $this->loadGroupsAndCountries($pdo, (int) $contest['id']);
@@ -82,7 +86,7 @@ class ContestController extends BaseController
         $this->render('contest/select.twig', [
             'groups'             => $groups,
             'countries_by_group' => $countriesByGroup,
-            'checked_ids'        => [],
+            'checked_ids'        => $checkedIds,
             'errors'             => [],
         ]);
     }
@@ -101,10 +105,7 @@ class ContestController extends BaseController
         $pdo  = getDB();
         $stmt = $pdo->prepare('SELECT id FROM entries WHERE user_id = ? AND contest_id = ?');
         $stmt->execute([(int) $_SESSION['user_id'], (int) $contest['id']]);
-        if ($stmt->fetch()) {
-            $this->redirect('/my-team');
-            return;
-        }
+        $existingEntry = $stmt->fetch();
 
         [$groups, $countriesByGroup] = $this->loadGroupsAndCountries($pdo, (int) $contest['id']);
 
@@ -134,11 +135,17 @@ class ContestController extends BaseController
 
         $pdo->beginTransaction();
         try {
-            $stmt = $pdo->prepare(
-                'INSERT INTO entries (user_id, contest_id, submitted_at, total_cost, total_score) VALUES (?, ?, NOW(), ?, 0)'
-            );
-            $stmt->execute([(int) $_SESSION['user_id'], (int) $contest['id'], $totalCost]);
-            $entryId = (int) $pdo->lastInsertId();
+            if ($existingEntry) {
+                $entryId = (int) $existingEntry['id'];
+                $pdo->prepare('DELETE FROM entry_countries WHERE entry_id = ?')->execute([$entryId]);
+                $pdo->prepare('UPDATE entries SET total_cost = ?, submitted_at = NOW() WHERE id = ?')
+                    ->execute([$totalCost, $entryId]);
+            } else {
+                $pdo->prepare(
+                    'INSERT INTO entries (user_id, contest_id, submitted_at, total_cost, total_score) VALUES (?, ?, NOW(), ?, 0)'
+                )->execute([(int) $_SESSION['user_id'], (int) $contest['id'], $totalCost]);
+                $entryId = (int) $pdo->lastInsertId();
+            }
 
             $stmt = $pdo->prepare('INSERT INTO entry_countries (entry_id, country_id) VALUES (?, ?)');
             foreach ($picks as $pick) {
@@ -156,7 +163,7 @@ class ContestController extends BaseController
             return;
         }
 
-        $this->flash('success', 'Your team has been submitted!');
+        $this->flash('success', $existingEntry ? 'Your team has been updated!' : 'Your team has been submitted!');
         $this->redirect('/my-team');
     }
 
@@ -204,8 +211,11 @@ class ContestController extends BaseController
             'entry'       => $entry,
             'picks'       => $picks,
             'total_score' => array_sum(array_column($picks, 'score')),
+            'is_open'     => $contest['status'] === 'open',
             'is_finished' => $contest['status'] === 'finished',
             'is_closed'   => $contest['status'] === 'closed',
+            'launch_date' => $contest['launch_date'] ?? null,
+            'launch_time' => $contest['launch_time'] ?? null,
         ]);
     }
 
