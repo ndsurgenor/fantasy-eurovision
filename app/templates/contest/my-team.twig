@@ -15,31 +15,33 @@
     </div>
 
     <div class="bg-stage-900 border border-white/10 rounded-xl overflow-hidden mb-6">
-        <table class="w-full text-sm">
+        <table id="my-team-table" class="w-full text-sm">
             <thead>
                 <tr class="bg-white/5 text-white/85 text-xs uppercase tracking-wider">
-                    <th class="px-4 py-3 text-left">Country</th>
-                    <th class="px-4 py-3 text-left hidden sm:table-cell">Group</th>
-                    <th class="px-4 py-3 text-right hidden sm:table-cell">Price</th>
+                    <th class="px-4 py-3 text-left cursor-pointer select-none" data-col="0" data-sort-type="number"><span class="sm:hidden">#</span><span class="hidden sm:inline">Order</span> <span class="sort-icon relative inline-block w-4 h-4" style="vertical-align:-0.35em"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute inset-0 m-auto w-3 h-3"><polyline points="3,6 8,2 13,6"/><polyline points="3,10 8,14 13,10"/></svg></span></th>
+                    <th class="px-4 py-3 text-left cursor-pointer select-none" data-col="1" data-sort-type="text">Country <span class="sort-icon relative inline-block w-4 h-4" style="vertical-align:-0.35em"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute inset-0 m-auto w-3 h-3"><polyline points="3,6 8,2 13,6"/><polyline points="3,10 8,14 13,10"/></svg></span></th>
+                    <th class="px-4 py-3 text-left hidden sm:table-cell cursor-pointer select-none" data-col="2" data-sort-type="text">Group <span class="sort-icon relative inline-block w-4 h-4" style="vertical-align:-0.35em"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute inset-0 m-auto w-3 h-3"><polyline points="3,6 8,2 13,6"/><polyline points="3,10 8,14 13,10"/></svg></span></th>
+                    <th class="px-4 py-3 text-right cursor-pointer select-none" data-col="3" data-sort-type="number">Price <span class="sort-icon relative inline-block w-4 h-4" style="vertical-align:-0.35em"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute inset-0 m-auto w-3 h-3"><polyline points="3,6 8,2 13,6"/><polyline points="3,10 8,14 13,10"/></svg></span></th>
                     {% if is_finished %}
-                        <th class="px-4 py-3 text-right">Points</th>
-                        <th class="px-4 py-3 text-right">Score</th>
+                        <th class="px-4 py-3 text-right cursor-pointer select-none" data-col="4" data-sort-type="number">Points <span class="sort-icon relative inline-block w-4 h-4" style="vertical-align:-0.35em"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute inset-0 m-auto w-3 h-3"><polyline points="3,6 8,2 13,6"/><polyline points="3,10 8,14 13,10"/></svg></span></th>
+                        <th class="px-4 py-3 text-right cursor-pointer select-none" data-col="5" data-sort-type="number">Score <span class="sort-icon relative inline-block w-4 h-4" style="vertical-align:-0.35em"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute inset-0 m-auto w-3 h-3"><polyline points="3,6 8,2 13,6"/><polyline points="3,10 8,14 13,10"/></svg></span></th>
                     {% endif %}
                 </tr>
             </thead>
             <tbody class="divide-y divide-white/10">
                 {% for pick in picks %}
                     <tr class="hover:bg-white/5 transition">
-                        <td class="px-4 py-3 font-medium text-white">
+                        <td class="px-4 py-3 text-white/85" data-sort-value="{{ pick.running_order ?? '' }}">{{ pick.running_order ?? '—' }}</td>
+                        <td class="px-4 py-3 font-medium text-white" data-sort-value="{{ pick.name }}">
                             {% if pick.flag_image %}
-                                <img src="/uploads/flags/{{ pick.flag_image }}" alt="{{ pick.name }}" class="h-6 w-auto mr-2 rounded-sm flex-shrink-0 inline-block align-middle">
+                                <img src="/uploads/flags/{{ pick.flag_image }}" alt="{{ pick.name }}" class="h-auto w-auto mr-2 rounded-sm flex-shrink-0 inline-block align-middle">
                             {% endif %}
                             {{ pick.name }}
                         </td>
-                        <td class="px-4 py-3 text-white/85 hidden sm:table-cell">{{ pick.group_name }}</td>
-                        <td class="px-4 py-3 text-right text-white/85 hidden sm:table-cell">€{{ pick.price|number_format(1) }}m</td>
+                        <td class="px-4 py-3 text-white/85 hidden sm:table-cell" data-sort-value="{{ pick.group_name }}">{{ pick.group_name }}</td>
+                        <td class="px-4 py-3 text-right text-white/85" data-sort-value="{{ pick.price }}">€{{ pick.price|number_format(1) }}m</td>
                         {% if is_finished %}
-                            <td class="px-4 py-3 text-right text-white/85">
+                            <td class="px-4 py-3 text-right text-white/85" data-sort-value="{{ pick.final_score_raw ?? '' }}">
                                 {% if pick.final_score_raw is not null %}
                                     {{ pick.final_score_raw }}
                                 {% else %}
@@ -49,7 +51,8 @@
                             <td class="px-4 py-3 text-right font-bold
                                 {% if pick.score > 0 %}text-emerald-400
                                 {% elseif pick.score < 0 %}text-rose-400
-                                {% else %}text-white/30{% endif %}">
+                                {% else %}text-white/30{% endif %}"
+                                data-sort-value="{{ pick.score }}">
                                 {{ pick.score > 0 ? '+' : '' }}{{ pick.score }}
                             </td>
                         {% endif %}
@@ -59,7 +62,7 @@
             {% if is_finished %}
                 <tfoot>
                     <tr class="bg-white/5 font-bold">
-                        <td class="px-4 py-3 text-white/85" colspan="{% if is_finished %}3{% else %}2{% endif %}">Total</td>
+                        <td class="px-4 py-3 text-white/85" colspan="4">Total</td>
                         <td class="px-4 py-3 text-right"></td>
                         <td class="px-4 py-3 text-right text-emerald-400 text-base">{{ total_score }}</td>
                     </tr>
@@ -68,11 +71,80 @@
         </table>
     </div>
 
-    <div class="flex flex-wrap gap-4 text-sm text-white/85">
-        <span>Budget spent: <strong class="text-white">€{{ entry.total_cost|number_format(1) }}m</strong></span>
+    <div class="flex flex-wrap justify-end gap-4 text-sm text-white/85">
+        <span>Total Spend: <strong class="text-white">€{{ entry.total_cost|number_format(1) }}m</strong></span>
         {% if is_finished %}
             <span>Total score: <strong class="text-emerald-400">{{ total_score }}</strong></span>
             <a href="/leaderboard" class="text-fuchsia-400 hover:text-fuchsia-300 hover:underline font-semibold">View Leaderboard →</a>
         {% endif %}
     </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    const table = document.getElementById('my-team-table');
+    const tbody = table.querySelector('tbody');
+    let sortCol = 0, sortAsc = true;
+
+    function getValue(row, col, type) {
+        const td = row.querySelectorAll('td')[col];
+        const raw = td ? td.dataset.sortValue : '';
+        if (type === 'number') {
+            const n = parseFloat(raw);
+            return isNaN(n) ? (sortAsc ? Infinity : -Infinity) : n;
+        }
+        return raw.toLowerCase();
+    }
+
+    const svgFill   = 'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute inset-0 m-auto w-4 h-4"';
+    const svgStroke = 'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute inset-0 m-auto w-3 h-3"';
+    const svgUp   = `<svg ${svgFill}><path fill-rule="evenodd" d="M12 20.25a.75.75 0 0 1-.75-.75V6.31l-5.47 5.47a.75.75 0 0 1-1.06-1.06l6.75-6.75a.75.75 0 0 1 1.06 0l6.75 6.75a.75.75 0 1 1-1.06 1.06l-5.47-5.47v13.19a.75.75 0 0 1-.75.75Z" clip-rule="evenodd"/></svg>`;
+    const svgDown = `<svg ${svgFill}><path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v13.19l5.47-5.47a.75.75 0 1 1 1.06 1.06l-6.75 6.75a.75.75 0 0 1-1.06 0l-6.75-6.75a.75.75 0 0 1 1.06-1.06l5.47 5.47V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd"/></svg>`;
+    const svgBoth = `<svg ${svgStroke}><polyline points="3,6 8,2 13,6"/><polyline points="3,10 8,14 13,10"/></svg>`;
+
+    function updateIcons(activeCol) {
+        table.querySelectorAll('th[data-col]').forEach(th => {
+            const icon = th.querySelector('.sort-icon');
+            const col = parseInt(th.dataset.col);
+            if (col === activeCol) {
+                icon.innerHTML = sortAsc ? svgUp : svgDown;
+                th.classList.add('text-fuchsia-400');
+            } else {
+                icon.innerHTML = svgBoth;
+                th.classList.remove('text-fuchsia-400');
+            }
+        });
+    }
+
+    function sortBy(col, type) {
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        rows.sort((a, b) => {
+            const av = getValue(a, col, type);
+            const bv = getValue(b, col, type);
+            if (av < bv) return sortAsc ? -1 : 1;
+            if (av > bv) return sortAsc ? 1 : -1;
+            return 0;
+        });
+        rows.forEach(r => tbody.appendChild(r));
+        updateIcons(col);
+    }
+
+    table.querySelectorAll('th[data-col]').forEach(th => {
+        th.addEventListener('click', () => {
+            const col = parseInt(th.dataset.col);
+            const type = th.dataset.sortType;
+            if (col === sortCol) {
+                sortAsc = !sortAsc;
+            } else {
+                sortCol = col;
+                sortAsc = true;
+            }
+            sortBy(sortCol, type);
+        });
+    });
+
+    sortBy(sortCol, 'number');
+})();
+</script>
 {% endblock %}

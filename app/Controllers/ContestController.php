@@ -188,7 +188,7 @@ class ContestController extends BaseController
                JOIN countries c       ON c.id  = ec.country_id
                JOIN contest_groups cg ON cg.id = c.group_id
               WHERE ec.entry_id = ?
-              ORDER BY cg.sort_order, c.running_order, c.name'
+              ORDER BY c.running_order, c.name'
         );
         $stmt->execute([(int) $entry['id']]);
         $rawPicks = $stmt->fetchAll();
