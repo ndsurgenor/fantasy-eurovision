@@ -1,6 +1,5 @@
 .env
 .claude/
-database/
 vendor/
 node_modules/
 CLAUDE.md
