@@ -3,8 +3,8 @@
 {% block title %}My Team | {{ site_name }}{% endblock %}
 
 {% block content %}
-    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <h1 class="text-3xl tracking-tight">My Team</h1>
+    <div class="flex flex-wrap items-center justify-between gap-4 mt-4 mb-6">
+        <h1 class="text-3xl">My Team</h1>
         {% if is_open %}
             <div class="flex flex-wrap items-center gap-3">
                 {% if launch_date and launch_time %}
@@ -76,7 +76,7 @@
         </table>
     </div>
 
-    <div class="flex flex-wrap justify-end gap-4 text-sm text-white/85">
+    <div class="flex flex-wrap justify-end gap-4 text-sm text-white/85 pr-4">
         <span>Total Spend: <strong class="text-white">€{{ entry.total_cost|number_format(1) }}m</strong></span>
         {% if is_finished %}
             <span>Total score: <strong class="text-emerald-400">{{ total_score }}</strong></span>
