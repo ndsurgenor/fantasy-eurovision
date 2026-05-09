@@ -4,7 +4,7 @@
 
 {% block content %}
     <h1 class="text-3xl mb-2 tracking-tight">Pick Your Team</h1>
-    <p class="text-white/85 mb-1">Choose exactly 8 countries with a total value of no more than €{{ contest.budget_limit|number_format(1) }}m from the groups below.</p>
+    <p class="text-white/85 mb-1">Choose exactly 8 countries with a total value of no more than €{{ contest.budget_limit|number_format(1) }}m.</p>
     <p class="text-white/85 mb-6">You must pick at least 1 and no more than 2 from each group.</p>
 
     {% if errors is defined and errors %}
@@ -20,25 +20,27 @@
           data-required-picks="8">
 
         {# Budget / picks tracker #}
-        <div class="bg-stage-900 border border-white/10 rounded-xl p-4 mb-6 flex flex-wrap gap-x-6 gap-y-2 items-center text-sm sticky top-4 z-10">
+        <div class="bg-stage-900 border border-white/10 rounded-xl p-4 mb-6 flex flex-wrap gap-x-6 gap-y-2 items-center max-[700px]:justify-center text-sm sticky top-4 z-10">
             <div class="flex items-baseline gap-1">
                 <span class="text-white/85">Countries:</span>
-                <span id="countries-count" class="font-bold text-white tabular-nums inline-block w-8 text-right">0/8</span>
+                <span id="countries-count" class="font-bold text-white tabular-nums inline-block w-6 text-right">0/8</span>
             </div>
             <div class="flex items-baseline gap-1">
                 <span class="text-white/85">Groups:</span>
-                <span id="groups-count" class="font-bold text-white tabular-nums inline-block w-8 text-right">0/0</span>
+                <span id="groups-count" class="font-bold text-white tabular-nums inline-block w-6 text-right">0/0</span>
             </div>
-            <div class="w-full sm:hidden"></div>
-            <div class="flex items-baseline gap-1">
+            {# Spent — 850px and above only #}
+            <div class="hidden min-[850px]:flex items-baseline gap-1">
                 <span class="text-white/85">Spent:</span>
                 <span id="budget-spent" class="font-bold text-white tabular-nums inline-block w-14 text-right">€0.0m</span>
             </div>
+            {# Remaining — always visible #}
             <div class="flex items-baseline gap-1">
                 <span class="text-white/85">Remaining:</span>
-                <span id="budget-remaining" class="font-bold text-emerald-400 tabular-nums inline-block w-16 text-right">€{{ contest.budget_limit|number_format(1) }}m</span>
+                <span id="budget-remaining" class="font-bold text-emerald-400 tabular-nums inline-block w-12 text-right">€{{ contest.budget_limit|number_format(1) }}m</span>
             </div>
-            <div class="ml-auto flex items-center">
+            {# Toggle buttons — full-width top row below sm, right-aligned from sm+ #}
+            <div class="max-[700px]:order-first max-[700px]:w-full max-[700px]:mb-2 min-[700px]:ml-auto flex max-[700px]:justify-center min-[700px]:justify-end items-center">
                 <div class="grid grid-cols-3 border border-white/20 rounded-lg overflow-hidden text-xs">
                     <button type="button" id="view-groups" title="Group view"
                             class="flex justify-center items-center gap-1.5 px-2.5 py-1.5 bg-white/20 text-white transition">
@@ -79,7 +81,7 @@
                     {% endif %}
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 min-[700px]:grid-cols-2 min-[850px]:grid-cols-3 gap-3">
                     {% for country in countries_by_group[group.id] ?? [] %}
                         <label data-running-order="{{ country.running_order ?? 0 }}"
                                class="flex items-center gap-3 bg-stage-900 border border-white/10 rounded-lg p-3 cursor-pointer hover:border-fuchsia-500/60 transition has-[:checked]:border-fuchsia-500 has-[:checked]:bg-fuchsia-500/10">
