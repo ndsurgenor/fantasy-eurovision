@@ -26,7 +26,8 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(Select-Object -First 5)",
       "Bash(C:\\\\Program Files\\\\MySQL\\\\MySQL Server 8.0\\\\bin\\\\mysql.exe *)",
-      "Bash(Remove-Item *)"
+      "Bash(Remove-Item *)",
+      "WebFetch(domain:www.spaceship.com)"
     ]
   }
 }
