@@ -31,23 +31,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Countries counter (all picks, including wildcard)
         countriesCount.textContent = `${count}/${REQUIRED}`;
+        countriesCount.classList.remove('text-white', 'text-green-400', 'text-red-400');
+        countriesCount.classList.add(count === REQUIRED ? 'text-green-400' : 'text-red-400');
 
         // Groups counter (non-wildcard groups with ≥1 pick / total non-wildcard groups)
         const groupsFilled = nonWildcardGroups.filter(s => (counts[s.dataset.groupId] || 0) > 0).length;
         groupsCount.textContent = `${groupsFilled}/${TOTAL_GROUPS}`;
+        groupsCount.classList.remove('text-white', 'text-green-400', 'text-red-400');
+        groupsCount.classList.add(groupsFilled === TOTAL_GROUPS ? 'text-green-400' : 'text-red-400');
 
         // Budget counters
         budgetSpent.textContent = `€${spent.toFixed(1)}m`;
         budgetRem.textContent   = `${remaining < 0 ? '-' : ''}€${Math.abs(remaining).toFixed(1)}m`;
 
-        // Colour remaining amount
-        budgetRem.classList.remove('text-red-400', 'text-yellow-400', 'text-emerald-400');
+        // Colour remaining
+        budgetRem.classList.remove('text-white', 'text-red-400', 'text-yellow-400', 'text-green-400');
         if (remaining < 0) {
             budgetRem.classList.add('text-red-400');
-        } else if (remaining < 5) {
+        } else if (count === REQUIRED && remaining >= 0) {
+            budgetRem.classList.add('text-green-400');
+        } else if (remaining <= 10 && count < REQUIRED) {
             budgetRem.classList.add('text-yellow-400');
         } else {
-            budgetRem.classList.add('text-emerald-400');
+            budgetRem.classList.add('text-white');
+        }
+
+        // Colour spent
+        budgetSpent.classList.remove('text-white', 'text-red-400', 'text-yellow-400', 'text-green-400');
+        if (spent > BUDGET) {
+            budgetSpent.classList.add('text-red-400');
+        } else if (count === REQUIRED && spent <= BUDGET) {
+            budgetSpent.classList.add('text-green-400');
+        } else if (spent >= BUDGET - 10 && count < REQUIRED) {
+            budgetSpent.classList.add('text-yellow-400');
+        } else {
+            budgetSpent.classList.add('text-white');
         }
 
         // Update per-group displays and validity
@@ -63,13 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (display) {
                 display.textContent = `${gCount}/${max}`;
-                display.classList.remove('text-white', 'text-red-400', 'text-green-400', 'text-indigo-400');
+                display.classList.remove('text-white', 'text-red-400', 'text-indigo-400');
                 if (gCount > max || (gCount === 0 && min > 0)) {
                     display.classList.add('text-red-400');
-                } else if (gCount >= min && (min > 0 || gCount > 0)) {
-                    display.classList.add('text-green-400');
-                } else {
+                } else if (gCount === 0) {
                     display.classList.add('text-indigo-400');
+                } else {
+                    display.classList.add('text-white');
                 }
             }
 

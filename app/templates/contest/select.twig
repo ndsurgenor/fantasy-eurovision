@@ -40,7 +40,7 @@
             {# Remaining — always visible #}
             <div class="flex items-baseline gap-1 max-xs:w-full max-xs:justify-center">
                 <span class="text-white/85">Remaining:</span>
-                <span id="budget-remaining" class="font-bold text-emerald-400 tabular-nums inline-block w-12 text-right">€{{ contest.budget_limit|number_format(1) }}m</span>
+                <span id="budget-remaining" class="font-bold text-emerald-400 tabular-nums inline-block w-14 text-right">€{{ contest.budget_limit|number_format(1) }}m</span>
             </div>
             {# Toggle buttons — full-width top row below sm, right-aligned from sm+ #}
             <div class="max-[700px]:order-first max-[700px]:w-full max-[700px]:mb-2 min-[700px]:ml-auto flex max-[700px]:justify-center min-[700px]:justify-end items-center">
@@ -80,7 +80,7 @@
                         <span class="text-xs bg-emerald-400/20 text-emerald-400 font-bold px-2 py-0.5 rounded-full">Wildcard (optional)</span>
                     {% else %}
                         <span class="text-sm text-white/85 max-sm:ml-auto translate-y-px whitespace-nowrap">
-                            Picks: <span data-group-display="{{ group.id }}" class="font-semibold text-white">0/2</span>
+                            Picks: <span data-group-display="{{ group.id }}" class="font-semibold">0/2</span>
                         </span>
                     {% endif %}
                 </div>
