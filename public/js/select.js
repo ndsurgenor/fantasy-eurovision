@@ -96,6 +96,16 @@ document.addEventListener('DOMContentLoaded', () => {
     checkboxes.forEach(cb => cb.addEventListener('change', update));
     update(); // set initial state on page load
 
+    // Sticky tracker backdrop — fades in as user scrolls past the sentinel
+    const sentinel = document.getElementById('tracker-sentinel');
+    const backdrop = document.getElementById('tracker-backdrop');
+    function updateBackdrop() {
+        const progress = Math.max(0, Math.min(1, -sentinel.getBoundingClientRect().top / 80));
+        backdrop.style.opacity = progress;
+    }
+    window.addEventListener('scroll', updateBackdrop, { passive: true });
+    updateBackdrop();
+
     // View toggle
     const viewGroupsBtn  = document.getElementById('view-groups');
     const viewOrderBtn   = document.getElementById('view-order');

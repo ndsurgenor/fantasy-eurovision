@@ -13,6 +13,18 @@
   --font-display: "Syne", sans-serif;
 }
 
+#tracker-backdrop {
+    position: absolute;
+    top: -1rem;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+    background: linear-gradient(to bottom, color-mix(in srgb, var(--color-stage-950) 85%, transparent) calc(100% - 1.5rem), transparent 100%);
+    z-index: -1;
+}
+
 @layer base {
   body {
     color: color-mix(in oklab, white 85%, transparent);

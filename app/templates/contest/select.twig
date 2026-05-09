@@ -20,7 +20,10 @@
           data-required-picks="8">
 
         {# Budget / picks tracker #}
-        <div class="bg-stage-900 border border-white/10 rounded-xl p-4 mb-6 flex flex-wrap gap-x-6 gap-y-2 items-center max-[700px]:justify-center text-sm sticky top-4 z-10">
+        <div id="tracker-sentinel"></div>
+        <div id="tracker-wrap" class="-mx-4 px-4 pb-10 mb-6 sticky top-4 z-10">
+            <div id="tracker-backdrop"></div>
+        <div class="bg-stage-900 border border-white/10 rounded-xl p-4 flex flex-wrap gap-x-6 gap-y-2 items-center max-[700px]:justify-center text-sm">
             <div class="flex items-baseline gap-1">
                 <span class="text-white/85">Countries:</span>
                 <span id="countries-count" class="font-bold text-white tabular-nums inline-block w-6 text-right">0/8</span>
@@ -65,6 +68,7 @@
                     </button>
                 </div>
             </div>
+        </div>
         </div>
 
         {# Groups & countries #}
