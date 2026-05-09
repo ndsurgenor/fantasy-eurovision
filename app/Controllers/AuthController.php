@@ -70,6 +70,7 @@ class AuthController extends BaseController
         $errors   = [];
 
         if (!$name)                                     $errors[] = 'Please enter your display name.';
+        if (strlen($name) > 16)                         $errors[] = 'Display name must be 16 characters or fewer.';
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Please enter a valid email address.';
         if (strlen($password) < 8)                      $errors[] = 'Password must be at least 8 characters.';
         if ($password !== $confirm)                     $errors[] = 'Passwords do not match.';
@@ -122,12 +123,25 @@ class AuthController extends BaseController
         $stmt->execute([$userId]);
         $user = $stmt->fetch();
 
+        if (!empty($_POST['remove_avatar'])) {
+            if ($user['avatar']) {
+                $path = dirname(__DIR__, 2) . '/public/uploads/avatars/' . $user['avatar'];
+                if (file_exists($path)) unlink($path);
+                $pdo->prepare('UPDATE users SET avatar = NULL WHERE id = ?')->execute([$userId]);
+                $_SESSION['avatar'] = null;
+            }
+            $this->flash('success', 'Avatar removed.');
+            $this->redirect('/profile');
+            return;
+        }
+
         $name           = trim($_POST['name']                 ?? '');
         $newPassword    =      $_POST['new_password']         ?? '';
         $confirmPassword =     $_POST['new_password_confirm'] ?? '';
         $errors         = [];
 
-        if (!$name) $errors[] = 'Display name cannot be empty.';
+        if (!$name)          $errors[] = 'Display name cannot be empty.';
+        if (strlen($name) > 16) $errors[] = 'Display name must be 16 characters or fewer.';
 
         if ($newPassword !== '' || $confirmPassword !== '') {
             if (strlen($newPassword) < 8)      $errors[] = 'New password must be at least 8 characters.';

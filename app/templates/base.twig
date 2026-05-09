@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ site_name }}{% endblock %}</title>
+    <title class="uppercase">{% block title %}{{ site_name }}{% endblock %}</title>
     <link rel="stylesheet" href="/css/app.css">
 </head>
 <body class="min-h-screen flex flex-col">
@@ -15,31 +15,31 @@
             <input type="checkbox" id="nav-toggle" class="peer sr-only">
 
             <div class="flex items-center justify-between">
-                <a href="/" class="font-display text-2xl flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-fuchsia-400 flex-shrink-0">
+                <a href="/" class="font-display text-xl xs:text-2xl flex items-center gap-1.5 xs:gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 xs:w-6 xs:h-6 text-fuchsia-400 flex-shrink-0">
                         <path d="M8.25 4.5a3.75 3.75 0 1 1 7.5 0v8.25a3.75 3.75 0 1 1-7.5 0V4.5Z" />
                         <path d="M6 10.5a.75.75 0 0 1 .75.75v1.5a5.25 5.25 0 1 0 10.5 0v-1.5a.75.75 0 0 1 1.5 0v1.5a6.751 6.751 0 0 1-6 6.709v2.291h3a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1 0-1.5h3v-2.291a6.751 6.751 0 0 1-6-6.709v-1.5A.75.75 0 0 1 6 10.5Z" />
                     </svg>
-                    <span class="bg-gradient-to-r from-fuchsia-400 to-emerald-400 bg-clip-text text-transparent font-bold tracking-wide">{{ site_name }}</span>
+                    <span class="bg-gradient-to-r from-fuchsia-400 to-emerald-400 bg-clip-text text-transparent font-bold tracking-tight uppercase"><span class="italic normal-case tracking-normal">Fantasy</span> Eurovision</span>
                 </a>
 
                 {# Desktop nav #}
                 <div class="hidden sm:flex items-center gap-4 text-base">
                     {% if is_logged_in %}
                         <a href="/my-team"
-                           class="{% if current_path == '/my-team' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-white{% endif %} transition">
+                           class="{% if current_path == '/my-team' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-fuchsia-400{% endif %} transition">
                             My Team
                         </a>
                         {% if contest and contest.status in ['closed', 'finished'] %}
                             <a href="/leaderboard"
-                               class="{% if current_path == '/leaderboard' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-white{% endif %} transition">
+                               class="{% if current_path == '/leaderboard' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-fuchsia-400{% endif %} transition">
                                 Leaderboard
                             </a>
                         {% endif %}
-                        <span class="text-white/20">|</span>
+                        <span class="text-white/30">|</span>
                         <div class="relative">
                             <button type="button" id="user-menu-btn"
-                                    class="flex items-center gap-1.5 text-white/85 hover:text-white transition">
+                                    class="flex items-center gap-1.5 text-white/85 hover:text-fuchsia-400 transition">
                                 {% if user_avatar %}
                                     <img src="/uploads/avatars/{{ user_avatar }}" alt="{{ user_name }}"
                                          class="w-6 h-6 rounded-full object-cover">
@@ -48,7 +48,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
                                 {% endif %}
-                                Logged in as <span class="flex items-center gap-0.5"><span class="underline">{{ user_name }}</span>
+                                <span class="hidden md:inline">Logged in as </span><span class="flex items-center gap-0.5"><span class="underline">{{ user_name }}</span>
                                 <svg id="user-menu-chevron" class="w-5 h-5 transition-transform duration-100" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                                 </svg></span>
@@ -56,30 +56,30 @@
                             <div id="user-dropdown"
                                  class="hidden absolute right-0 top-full mt-2 w-44 bg-stage-900 border border-white/10 rounded-lg shadow-xl overflow-hidden z-50">
                                 <a href="/profile"
-                                   class="block px-4 py-2.5 text-base text-right text-white/85 hover:text-white hover:bg-white/5 transition">
+                                   class="block px-4 py-2.5 text-base text-right text-white/85 hover:text-fuchsia-400 hover:bg-white/5 transition">
                                     Profile
                                 </a>
                                 <div class="border-t border-white/10"></div>
                                 <a href="/logout"
-                                   class="block px-4 py-2.5 text-base text-right text-white/85 hover:text-white hover:bg-white/5 transition">
+                                   class="block px-4 py-2.5 text-base text-right text-white/85 hover:text-fuchsia-400 hover:bg-white/5 transition">
                                     Log out
                                 </a>
                             </div>
                         </div>
                     {% else %}
                         <a href="/login"
-                           class="{% if current_path == '/login' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-white{% endif %} transition">
+                           class="{% if current_path == '/login' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-fuchsia-400{% endif %} transition">
                             Log in
                         </a>
                         <a href="/register"
-                           class="{% if current_path == '/register' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-white{% endif %} transition">
+                           class="{% if current_path == '/register' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-fuchsia-400{% endif %} transition">
                             Register
                         </a>
                     {% endif %}
                 </div>
 
                 {# Hamburger label — mobile only, toggles the peer checkbox #}
-                <label for="nav-toggle" class="sm:hidden cursor-pointer text-white/85 hover:text-white transition" aria-label="Toggle menu">
+                <label for="nav-toggle" class="sm:hidden cursor-pointer text-white/85 hover:text-fuchsia-400 transition" aria-label="Toggle menu">
                     <svg class="w-7 h-7 peer-checked:hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                     </svg>
@@ -93,18 +93,26 @@
             <div class="hidden peer-checked:block sm:hidden mt-3 pt-3 border-t border-white/10 space-y-1 text-base text-right">
                 {% if is_logged_in %}
                     <a href="/my-team"
-                       class="block px-2 py-2 rounded-lg {% if current_path == '/my-team' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-white hover:bg-white/5{% endif %} transition">
+                       class="block px-2 py-2 rounded-lg {% if current_path == '/my-team' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-fuchsia-400 hover:bg-white/5{% endif %} transition">
                         My Team
                     </a>
                     {% if contest and contest.status in ['closed', 'finished'] %}
                         <a href="/leaderboard"
-                           class="block px-2 py-2 rounded-lg {% if current_path == '/leaderboard' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-white hover:bg-white/5{% endif %} transition">
+                           class="block px-2 py-2 rounded-lg {% if current_path == '/leaderboard' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-fuchsia-400 hover:bg-white/5{% endif %} transition">
                             Leaderboard
                         </a>
                     {% endif %}
+                    <a href="/profile"
+                       class="block px-2 py-2 rounded-lg {% if current_path == '/profile' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-fuchsia-400 hover:bg-white/5{% endif %} transition">
+                        Profile
+                    </a>
+                    <a href="/logout"
+                       class="block px-2 py-2 rounded-lg text-white/85 hover:text-fuchsia-400 hover:bg-white/5 transition">
+                        Log out
+                    </a>
                     <div class="border-t border-white/10 my-2"></div>
-                    <div class="flex items-center justify-end gap-2 px-2 py-2 text-white">
-                        Logged in as <span class="underline">{{ user_name }}</span>
+                    <div class="flex items-center justify-end gap-2 px-2 py-2 text-white/85">
+                        Logged in as <span>{{ user_name }}</span>
                         {% if user_avatar %}
                             <img src="/uploads/avatars/{{ user_avatar }}" alt="{{ user_name }}"
                                  class="w-6 h-6 rounded-full object-cover">
@@ -114,21 +122,13 @@
                             </svg>
                         {% endif %}
                     </div>
-                    <a href="/profile"
-                       class="block px-2 py-2 rounded-lg {% if current_path == '/profile' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-white hover:bg-white/5{% endif %} transition">
-                        Profile
-                    </a>
-                    <a href="/logout"
-                       class="block px-2 py-2 rounded-lg text-white/85 hover:text-white hover:bg-white/5 transition">
-                        Log out
-                    </a>
                 {% else %}
                     <a href="/login"
-                       class="block px-2 py-2 rounded-lg {% if current_path == '/login' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-white hover:bg-white/5{% endif %} transition">
+                       class="block px-2 py-2 rounded-lg {% if current_path == '/login' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-fuchsia-400 hover:bg-white/5{% endif %} transition">
                         Log in
                     </a>
                     <a href="/register"
-                       class="block px-2 py-2 rounded-lg {% if current_path == '/register' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-white hover:bg-white/5{% endif %} transition">
+                       class="block px-2 py-2 rounded-lg {% if current_path == '/register' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-fuchsia-400 hover:bg-white/5{% endif %} transition">
                         Register
                     </a>
                 {% endif %}

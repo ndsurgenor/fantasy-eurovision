@@ -4,7 +4,8 @@
 
 {% block content %}
     <div class="max-w-md mx-auto">
-        <h1 class="text-3xl mt-4 mb-8 text-center">Create Account</h1>
+        <h1 class="text-3xl mt-4 mb-2 text-center">Create Account</h1>
+        <p class="text-white/70 text-sm text-center mb-8">Please complete all fields below</p>
 
         {% if errors is defined and errors %}
             <div class="bg-rose-500/20 border border-rose-500/40 rounded-lg px-4 py-3 mb-6">
@@ -16,10 +17,13 @@
 
         <form method="POST" action="/register" class="bg-stage-900 rounded-xl p-6 space-y-5 border border-white/10">
             <div>
-                <label for="name" class="block text-sm font-medium text-white/85 mb-1">Display Name</label>
+                <div class="flex items-center justify-between mb-1">
+                    <label for="name" class="text-sm font-medium text-white/85">Display Name</label>
+                    <span id="name-counter" class="text-xs text-white/70"></span>
+                </div>
                 <input type="text" id="name" name="name"
                        value="{{ name ?? '' }}"
-                       required autocomplete="nickname"
+                       required autocomplete="nickname" maxlength="16"
                        class="w-full bg-stage-950 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-fuchsia-500">
             </div>
 
@@ -32,7 +36,10 @@
             </div>
 
             <div>
-                <label for="password" class="block text-sm font-medium text-white/85 mb-1">Password</label>
+                <div class="flex items-center justify-between mb-1">
+                    <label for="password" class="text-sm font-medium text-white/85">Password</label>
+                    <span class="text-xs text-white/70">Min 8 characters</span>
+                </div>
                 <div class="relative">
                     <input type="password" id="password" name="password"
                            required autocomplete="new-password" minlength="8"
@@ -49,7 +56,6 @@
                         </svg>
                     </button>
                 </div>
-                <p class="text-white/70 text-xs mt-1">At least 8 characters</p>
             </div>
 
             <div>
@@ -72,10 +78,12 @@
                 </div>
             </div>
 
-            <button type="submit"
-                    class="w-full bg-gradient-to-r from-fuchsia-500 to-purple-600 hover:from-fuchsia-400 hover:to-purple-500 text-white font-bold py-2 px-4 rounded-lg transition">
-                Create Account
-            </button>
+            <div class="pt-5">
+                <button type="submit"
+                        class="w-full bg-gradient-to-r from-fuchsia-500 to-purple-600 hover:from-fuchsia-400 hover:to-purple-500 text-white font-bold py-2 px-4 rounded-lg transition">
+                    Create Account
+                </button>
+            </div>
         </form>
 
         <p class="text-center text-white/85 mt-8">
@@ -87,4 +95,5 @@
 
 {% block scripts %}
 <script src="/js/password-toggle.js"></script>
+<script src="/js/name-counter.js"></script>
 {% endblock %}

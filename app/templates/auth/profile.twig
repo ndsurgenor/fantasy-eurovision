@@ -17,34 +17,88 @@
         <form method="POST" action="/profile" enctype="multipart/form-data"
               class="bg-stage-900 rounded-xl p-6 space-y-5 border border-white/10">
 
+            <input type="hidden" name="remove_avatar" value="" id="remove-avatar-flag">
+
             {# Avatar #}
             <div class="flex flex-col items-center gap-3">
+                {# Image / placeholder #}
                 {% if user.avatar %}
-                    <img src="/uploads/avatars/{{ user.avatar }}" alt="{{ user.name }}"
-                         class="w-20 h-20 rounded-full object-cover border-2 border-white/10">
+                    <img id="avatar-img" src="/uploads/avatars/{{ user.avatar }}" alt="{{ user.name }}"
+                         class="w-40 h-40 rounded-full object-cover border-2 border-white/10">
                 {% else %}
-                    <div class="w-20 h-20 rounded-full bg-white/5 border-2 border-white/10 flex items-center justify-center">
-                        <svg class="w-10 h-10 text-white/30" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <div id="avatar-placeholder" class="w-40 h-40 rounded-full bg-white/5 border-2 border-white/10 flex items-center justify-center">
+                        <svg class="w-20 h-20 text-white/30" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </div>
+                    <img id="avatar-img" src="" alt="Preview"
+                         class="hidden w-40 h-40 rounded-full object-cover border-2 border-fuchsia-500/40">
                 {% endif %}
-                <div>
-                    <label for="avatar" class="block text-sm font-medium text-white/85 mb-1 text-center">Profile Picture</label>
-                    <input type="file" id="avatar" name="avatar" accept="image/jpeg,image/png,image/gif,image/webp"
-                           class="text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-1.5 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100">
-                    <p class="text-white/70 text-xs mt-1 text-center">JPG, PNG, GIF or WebP — max 2MB</p>
-                </div>
+
+                <input type="file" id="avatar" name="avatar" accept="image/jpeg,image/png,image/gif,image/webp" class="sr-only">
+
+                {# Buttons: Replace + Remove when avatar exists; Add when no avatar #}
+                {% if user.avatar %}
+                    <div class="flex flex-col items-center gap-2">
+                        <label for="avatar"
+                               class="cursor-pointer flex items-center gap-1.5 border border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-300 hover:bg-fuchsia-500/25 hover:border-fuchsia-400 hover:text-fuchsia-200 font-medium py-1.5 px-4 rounded-lg transition text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                                <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H3.989a.75.75 0 0 0-.75.75v4.242a.75.75 0 0 0 1.5 0v-2.43l.31.31a7 7 0 0 0 11.712-3.138.75.75 0 0 0-1.449-.39Zm1.23-3.723a.75.75 0 0 0 .219-.53V2.929a.75.75 0 0 0-1.5 0V5.36l-.31-.31A7 7 0 0 0 3.239 8.188a.75.75 0 1 0 1.448.389A5.5 5.5 0 0 1 13.89 6.11l.311.31h-2.432a.75.75 0 0 0 0 1.5h4.243a.75.75 0 0 0 .53-.219Z" clip-rule="evenodd" />
+                            </svg>
+                            Replace
+                        </label>
+                        <button type="button" id="remove-avatar-btn"
+                                class="flex items-center gap-1.5 border border-rose-500 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 hover:border-rose-400 hover:text-rose-300 font-medium py-1.5 px-4 rounded-lg transition text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                                <path fill-rule="evenodd" d="M4 10a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 10Z" clip-rule="evenodd" />
+                            </svg>
+                            Remove
+                        </button>
+                    </div>
+                {% else %}
+                    <div id="add-controls">
+                        <label for="avatar"
+                               class="cursor-pointer flex items-center gap-1.5 border border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-300 hover:bg-fuchsia-500/25 hover:border-fuchsia-400 hover:text-fuchsia-200 font-medium py-1.5 px-4 rounded-lg transition text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                                <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                            </svg>
+                            Add
+                        </label>
+                    </div>
+                    <div id="preview-controls" class="hidden">
+                        <div class="flex flex-col items-center gap-2">
+                            <label for="avatar"
+                                   class="cursor-pointer flex items-center gap-1.5 border border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-300 hover:bg-fuchsia-500/25 hover:border-fuchsia-400 hover:text-fuchsia-200 font-medium py-1.5 px-4 rounded-lg transition text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                                    <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H3.989a.75.75 0 0 0-.75.75v4.242a.75.75 0 0 0 1.5 0v-2.43l.31.31a7 7 0 0 0 11.712-3.138.75.75 0 0 0-1.449-.39Zm1.23-3.723a.75.75 0 0 0 .219-.53V2.929a.75.75 0 0 0-1.5 0V5.36l-.31-.31A7 7 0 0 0 3.239 8.188a.75.75 0 1 0 1.448.389A5.5 5.5 0 0 1 13.89 6.11l.311.31h-2.432a.75.75 0 0 0 0 1.5h4.243a.75.75 0 0 0 .53-.219Z" clip-rule="evenodd" />
+                                </svg>
+                                Replace
+                            </label>
+                            <button type="button" id="clear-preview-btn"
+                                    class="flex items-center gap-1.5 border border-rose-500 bg-rose-500/10 text-rose-400 hover:bg-rose-500/25 hover:border-rose-400 hover:text-rose-300 font-medium py-1.5 px-4 rounded-lg transition text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                                    <path fill-rule="evenodd" d="M4 10a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 10Z" clip-rule="evenodd" />
+                                </svg>
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <p class="text-white/70 text-xs">JPG, PNG, GIF, or WebP<span class="text-white/30 px-1"> | </span>Max 2MB</p>
             </div>
 
             <hr class="border-white/10">
 
             {# Display name #}
             <div>
-                <label for="name" class="block text-sm font-medium text-white/85 mb-1">Display Name</label>
+                <div class="flex items-center justify-between mb-1">
+                    <label for="name" class="text-sm font-medium text-white/85">Display Name</label>
+                    <span id="name-counter" class="text-xs text-white/70"></span>
+                </div>
                 <input type="text" id="name" name="name"
                        value="{{ name ?? user.name }}"
-                       required autocomplete="nickname"
+                       required autocomplete="nickname" maxlength="16"
                        class="w-full bg-stage-950 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-fuchsia-500">
             </div>
 
@@ -52,17 +106,19 @@
             <div>
                 <label class="block text-sm font-medium text-white/85 mb-1">Email</label>
                 <p class="w-full bg-stage-950 border border-white/10 rounded-lg px-3 py-2 text-white/30">{{ user.email }}</p>
+                <p class="text-white/70 text-sm text-center mt-6 mb-2">Avatar and display name shown on leaderboards. <br class="hidden xs:block">Email will not be made public.</p>
             </div>
 
             <hr class="border-white/10">
 
             {# Change password #}
             <div>
-                <p class="text-sm font-medium text-white/85 mb-3">Change Password <span class="text-white/30 font-normal">(leave blank to keep current)</span></p>
-
                 <div class="space-y-3">
                     <div>
-                        <label for="new_password" class="block text-sm font-medium text-white/85 mb-1">New Password</label>
+                        <div class="flex items-center justify-between mb-1">
+                            <label for="new_password" class="text-sm font-medium text-white/85">New Password</label>
+                            <span class="text-xs text-white/70">Min 8 characters</span>
+                        </div>
                         <div class="relative">
                             <input type="password" id="new_password" name="new_password"
                                    autocomplete="new-password" minlength="8"
@@ -79,7 +135,6 @@
                                 </svg>
                             </button>
                         </div>
-                        <p class="text-white/70 text-xs mt-1">At least 8 characters</p>
                     </div>
 
                     <div>
@@ -102,16 +157,43 @@
                         </div>
                     </div>
                 </div>
+                <p class="text-white/70 text-sm text-center mt-6 mb-2">Leave password fields empty to keep current password.</p>
             </div>
 
-            <button type="submit"
-                    class="w-full bg-gradient-to-r from-fuchsia-500 to-purple-600 hover:from-fuchsia-400 hover:to-purple-500 text-white font-bold py-2 px-4 rounded-lg transition">
-                Save Changes
-            </button>
+            <div class="pt-5 flex flex-col gap-3">
+                <button type="submit"
+                        class="w-full bg-gradient-to-r from-fuchsia-500 to-purple-600 hover:from-fuchsia-400 hover:to-purple-500 text-white font-bold py-2 px-4 rounded-lg transition">
+                    Save Changes
+                </button>
+                <a href="/my-team"
+                   class="w-full text-center border border-white/20 text-white/85 hover:border-white/40 hover:text-white font-bold py-2 px-4 rounded-lg transition">
+                    Cancel
+                </a>
+            </div>
         </form>
+
+        {# Remove avatar confirmation dialog #}
+        <dialog id="remove-avatar-dialog"
+                class="bg-stage-900 border border-white/10 rounded-xl shadow-2xl p-6 w-full max-w-sm mx-auto mt-[20vh] backdrop:bg-black/60">
+            <h2 class="text-xl mb-2">Remove Avatar</h2>
+            <p class="text-white/85 text-sm mb-6">Are you sure? Your current profile picture will be permanently deleted.</p>
+            <div class="flex gap-3 justify-end">
+                <button type="button" id="remove-avatar-cancel"
+                        class="border border-white/20 text-white/85 hover:border-white/40 hover:text-white font-medium py-2 px-4 rounded-lg text-sm transition">
+                    Cancel
+                </button>
+                <button type="button" id="remove-avatar-confirm"
+                        class="bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition">
+                    Remove Avatar
+                </button>
+            </div>
+        </dialog>
+
     </div>
 {% endblock %}
 
 {% block scripts %}
 <script src="/js/password-toggle.js"></script>
+<script src="/js/profile.js"></script>
+<script src="/js/name-counter.js"></script>
 {% endblock %}

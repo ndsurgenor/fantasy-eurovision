@@ -1,3 +1,11 @@
+// Close mobile menu when viewport widens past the sm breakpoint
+const navToggle = document.getElementById('nav-toggle');
+if (navToggle) {
+    window.matchMedia('(min-width: 640px)').addEventListener('change', e => {
+        if (e.matches) navToggle.checked = false;
+    });
+}
+
 const btn      = document.getElementById('user-menu-btn');
 const dropdown = document.getElementById('user-dropdown');
 const chevron  = document.getElementById('user-menu-chevron');
