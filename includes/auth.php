@@ -32,6 +32,7 @@ function loginUser(array $user): void {
     $_SESSION['user_id']  = $user['id'];
     $_SESSION['name']     = $user['name'];
     $_SESSION['is_admin'] = (bool) $user['is_admin'];
+    $_SESSION['avatar']   = $user['avatar'] ?? null;
 }
 
 function logoutUser(): void {

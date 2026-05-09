@@ -25,7 +25,8 @@ abstract class BaseController
         $this->twig->addGlobal('current_year', (int) date('Y'));
         $this->twig->addGlobal('is_logged_in', isLoggedIn());
         $this->twig->addGlobal('is_admin',     isAdmin());
-        $this->twig->addGlobal('user_name',    $_SESSION['name'] ?? null);
+        $this->twig->addGlobal('user_name',   $_SESSION['name']   ?? null);
+        $this->twig->addGlobal('user_avatar', $_SESSION['avatar'] ?? null);
 
         // Contest — resolved differently for admin vs public pages
         $isAdmin = str_starts_with(

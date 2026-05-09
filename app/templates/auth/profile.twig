@@ -1,0 +1,117 @@
+{% extends 'base.twig' %}
+
+{% block title %}Profile | {{ site_name }}{% endblock %}
+
+{% block content %}
+    <div class="max-w-md mx-auto">
+        <h1 class="text-3xl mt-4 mb-8 text-center tracking-tight">Your Profile</h1>
+
+        {% if errors is defined and errors %}
+            <div class="bg-rose-500/20 border border-rose-500/40 rounded-lg px-4 py-3 mb-6">
+                {% for error in errors %}
+                    <p class="text-rose-300 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" action="/profile" enctype="multipart/form-data"
+              class="bg-stage-900 rounded-xl p-6 space-y-5 border border-white/10">
+
+            {# Avatar #}
+            <div class="flex flex-col items-center gap-3">
+                {% if user.avatar %}
+                    <img src="/uploads/avatars/{{ user.avatar }}" alt="{{ user.name }}"
+                         class="w-20 h-20 rounded-full object-cover border-2 border-white/10">
+                {% else %}
+                    <div class="w-20 h-20 rounded-full bg-white/5 border-2 border-white/10 flex items-center justify-center">
+                        <svg class="w-10 h-10 text-white/30" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                {% endif %}
+                <div>
+                    <label for="avatar" class="block text-sm font-medium text-white/85 mb-1 text-center">Profile Picture</label>
+                    <input type="file" id="avatar" name="avatar" accept="image/jpeg,image/png,image/gif,image/webp"
+                           class="text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-1.5 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100">
+                    <p class="text-white/70 text-xs mt-1 text-center">JPG, PNG, GIF or WebP — max 2MB</p>
+                </div>
+            </div>
+
+            <hr class="border-white/10">
+
+            {# Display name #}
+            <div>
+                <label for="name" class="block text-sm font-medium text-white/85 mb-1">Display Name</label>
+                <input type="text" id="name" name="name"
+                       value="{{ name ?? user.name }}"
+                       required autocomplete="nickname"
+                       class="w-full bg-stage-950 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-fuchsia-500">
+            </div>
+
+            {# Email (read-only) #}
+            <div>
+                <label class="block text-sm font-medium text-white/85 mb-1">Email</label>
+                <p class="w-full bg-stage-950 border border-white/10 rounded-lg px-3 py-2 text-white/30">{{ user.email }}</p>
+            </div>
+
+            <hr class="border-white/10">
+
+            {# Change password #}
+            <div>
+                <p class="text-sm font-medium text-white/85 mb-3">Change Password <span class="text-white/30 font-normal">(leave blank to keep current)</span></p>
+
+                <div class="space-y-3">
+                    <div>
+                        <label for="new_password" class="block text-sm font-medium text-white/85 mb-1">New Password</label>
+                        <div class="relative">
+                            <input type="password" id="new_password" name="new_password"
+                                   autocomplete="new-password" minlength="8"
+                                   class="w-full bg-stage-950 border border-white/20 rounded-lg px-3 py-2 pr-10 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-fuchsia-500">
+                            <button type="button" onclick="togglePassword('new_password', this)"
+                                    class="absolute inset-y-0 right-0 flex items-center px-3 text-white/30 hover:text-white/85 transition-colors"
+                                    aria-label="Toggle password visibility">
+                                <svg class="eye-open w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <svg class="eye-closed w-5 h-5 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-white/70 text-xs mt-1">At least 8 characters</p>
+                    </div>
+
+                    <div>
+                        <label for="new_password_confirm" class="block text-sm font-medium text-white/85 mb-1">Confirm New Password</label>
+                        <div class="relative">
+                            <input type="password" id="new_password_confirm" name="new_password_confirm"
+                                   autocomplete="new-password"
+                                   class="w-full bg-stage-950 border border-white/20 rounded-lg px-3 py-2 pr-10 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-fuchsia-500">
+                            <button type="button" onclick="togglePassword('new_password_confirm', this)"
+                                    class="absolute inset-y-0 right-0 flex items-center px-3 text-white/30 hover:text-white/85 transition-colors"
+                                    aria-label="Toggle password visibility">
+                                <svg class="eye-open w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <svg class="eye-closed w-5 h-5 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-gradient-to-r from-fuchsia-500 to-purple-600 hover:from-fuchsia-400 hover:to-purple-500 text-white font-bold py-2 px-4 rounded-lg transition">
+                Save Changes
+            </button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/js/password-toggle.js"></script>
+{% endblock %}

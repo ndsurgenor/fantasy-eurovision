@@ -27,6 +27,8 @@ $router->post('/login',    [AuthController::class, 'login']);
 $router->get('/register',  [AuthController::class, 'registerForm']);
 $router->post('/register', [AuthController::class, 'register']);
 $router->get('/logout',    [AuthController::class, 'logout']);
+$router->get('/profile',   [AuthController::class, 'profileForm']);
+$router->post('/profile',  [AuthController::class, 'updateProfile']);
 
 // Contest (public)
 $router->get('/',            [ContestController::class, 'index']);

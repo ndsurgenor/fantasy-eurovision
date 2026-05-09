@@ -102,6 +102,91 @@ class AuthController extends BaseController
         $this->redirect('/select');
     }
 
+    public function profileForm(): void
+    {
+        requireLogin();
+        $pdo  = getDB();
+        $stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?');
+        $stmt->execute([(int) $_SESSION['user_id']]);
+        $this->render('auth/profile.twig', ['user' => $stmt->fetch()]);
+    }
+
+    public function updateProfile(): void
+    {
+        requireLogin();
+
+        $pdo    = getDB();
+        $userId = (int) $_SESSION['user_id'];
+
+        $stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?');
+        $stmt->execute([$userId]);
+        $user = $stmt->fetch();
+
+        $name           = trim($_POST['name']                 ?? '');
+        $newPassword    =      $_POST['new_password']         ?? '';
+        $confirmPassword =     $_POST['new_password_confirm'] ?? '';
+        $errors         = [];
+
+        if (!$name) $errors[] = 'Display name cannot be empty.';
+
+        if ($newPassword !== '' || $confirmPassword !== '') {
+            if (strlen($newPassword) < 8)      $errors[] = 'New password must be at least 8 characters.';
+            if ($newPassword !== $confirmPassword) $errors[] = 'New passwords do not match.';
+        }
+
+        $avatarFilename = $user['avatar'];
+
+        if (!empty($_FILES['avatar']['name'])) {
+            $file    = $_FILES['avatar'];
+            $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            $ext     = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+            if (!in_array($ext, $allowed, true)) {
+                $errors[] = 'Avatar must be a JPG, PNG, GIF, or WebP image.';
+            } elseif ($file['size'] > 2 * 1024 * 1024) {
+                $errors[] = 'Avatar must be under 2MB.';
+            } elseif ($file['error'] !== UPLOAD_ERR_OK) {
+                $errors[] = 'Avatar upload failed. Please try again.';
+            } else {
+                $filename = $userId . '_' . time() . '.' . $ext;
+                $dest     = dirname(__DIR__, 2) . '/public/uploads/avatars/' . $filename;
+                if (move_uploaded_file($file['tmp_name'], $dest)) {
+                    if ($avatarFilename) {
+                        $old = dirname(__DIR__, 2) . '/public/uploads/avatars/' . $avatarFilename;
+                        if (file_exists($old)) unlink($old);
+                    }
+                    $avatarFilename = $filename;
+                } else {
+                    $errors[] = 'Could not save avatar. Please try again.';
+                }
+            }
+        }
+
+        if (!empty($errors)) {
+            $this->render('auth/profile.twig', [
+                'user'   => $user,
+                'errors' => $errors,
+                'name'   => $name,
+            ]);
+            return;
+        }
+
+        if ($newPassword !== '') {
+            $hash = password_hash($newPassword, PASSWORD_BCRYPT);
+            $pdo->prepare('UPDATE users SET name = ?, password_hash = ?, avatar = ? WHERE id = ?')
+                ->execute([$name, $hash, $avatarFilename, $userId]);
+        } else {
+            $pdo->prepare('UPDATE users SET name = ?, avatar = ? WHERE id = ?')
+                ->execute([$name, $avatarFilename, $userId]);
+        }
+
+        $_SESSION['name']   = $name;
+        $_SESSION['avatar'] = $avatarFilename;
+
+        $this->flash('success', 'Profile updated successfully.');
+        $this->redirect('/profile');
+    }
+
     public function logout(): void
     {
         logoutUser();
