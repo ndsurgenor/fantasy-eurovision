@@ -63,8 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (display) {
                 display.textContent = `${gCount}/${max}`;
-                display.classList.remove('text-red-400', 'text-green-400', 'text-indigo-400');
-                if (gCount > max) {
+                display.classList.remove('text-white', 'text-red-400', 'text-green-400', 'text-indigo-400');
+                if (gCount > max || (gCount === 0 && min > 0)) {
                     display.classList.add('text-red-400');
                 } else if (gCount >= min && (min > 0 || gCount > 0)) {
                     display.classList.add('text-green-400');
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function buildTwoColView(sorted, container, headingText) {
         const half    = Math.ceil(sorted.length / 2);
         const wrapper = document.createElement('div');
-        wrapper.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+        wrapper.className = 'grid grid-cols-1 min-[700px]:grid-cols-2 gap-4';
 
         [sorted.slice(0, half), sorted.slice(half)].forEach(col => {
             const colDiv = document.createElement('div');

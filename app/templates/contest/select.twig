@@ -21,7 +21,7 @@
 
         {# Budget / picks tracker #}
         <div id="tracker-sentinel"></div>
-        <div id="tracker-wrap" class="-mx-4 px-4 pb-10 mb-6 sticky top-4 z-10">
+        <div id="tracker-wrap" class="-mx-4 px-4 pb-10 mb-2 sticky top-4 z-10">
             <div id="tracker-backdrop"></div>
         <div class="bg-stage-900 border border-white/10 rounded-xl p-4 flex flex-wrap gap-x-6 gap-y-2 items-center max-[700px]:justify-center text-sm">
             <div class="flex items-baseline gap-1">
@@ -79,7 +79,7 @@
                     {% if group.is_wildcard %}
                         <span class="text-xs bg-emerald-400/20 text-emerald-400 font-bold px-2 py-0.5 rounded-full">Wildcard (optional)</span>
                     {% else %}
-                        <span class="text-xs text-white/85">
+                        <span class="text-sm text-white/85 max-sm:ml-auto translate-y-px whitespace-nowrap">
                             Picks: <span data-group-display="{{ group.id }}" class="font-semibold text-white">0/2</span>
                         </span>
                     {% endif %}
@@ -123,7 +123,7 @@
         {# Price order view container — populated by JS #}
         <div id="price-container" class="hidden mb-6"></div>
 
-        <div class="mt-6 text-center">
+        <div class="mt-10 mb-12 text-center">
             <button type="submit" id="submit-btn" disabled
                     class="bg-gradient-to-r from-fuchsia-600 to-purple-700 hover:from-fuchsia-500 hover:to-purple-600 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-2 px-6 rounded-lg transition text-base">
                 Submit My Team
