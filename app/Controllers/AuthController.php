@@ -164,7 +164,7 @@ class AuthController extends BaseController
             } else {
                 $filename = $userId . '_' . time() . '.' . $ext;
                 $dest     = dirname(__DIR__, 2) . '/public/uploads/avatars/' . $filename;
-                if (move_uploaded_file($file['tmp_name'], $dest)) {
+                if ($this->saveResizedAvatar($file['tmp_name'], $dest, $ext)) {
                     if ($avatarFilename) {
                         $old = dirname(__DIR__, 2) . '/public/uploads/avatars/' . $avatarFilename;
                         if (file_exists($old)) unlink($old);
@@ -205,5 +205,54 @@ class AuthController extends BaseController
     {
         logoutUser();
         $this->redirect('/login');
+    }
+
+    private function saveResizedAvatar(string $tmpPath, string $destPath, string $ext): bool
+    {
+        $info = @\getimagesize($tmpPath);
+        if (!$info) return false;
+
+        [$origW, $origH] = $info;
+        $maxDim = 300;
+
+        if ($origW <= $maxDim && $origH <= $maxDim) {
+            $newW = $origW;
+            $newH = $origH;
+        } elseif ($origW >= $origH) {
+            $newW = $maxDim;
+            $newH = (int) round($origH * $maxDim / $origW);
+        } else {
+            $newH = $maxDim;
+            $newW = (int) round($origW * $maxDim / $origH);
+        }
+
+        $src = match ($ext) {
+            'jpg', 'jpeg' => @\imagecreatefromjpeg($tmpPath),
+            'png'         => @\imagecreatefrompng($tmpPath),
+            'gif'         => @\imagecreatefromgif($tmpPath),
+            'webp'        => @\imagecreatefromwebp($tmpPath),
+            default       => false,
+        };
+        if (!$src) return false;
+
+        $dst = \imagecreatetruecolor($newW, $newH);
+
+        if (in_array($ext, ['png', 'gif'], true)) {
+            \imagecolortransparent($dst, \imagecolorallocatealpha($dst, 0, 0, 0, 127));
+            \imagealphablending($dst, false);
+            \imagesavealpha($dst, true);
+        }
+
+        \imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+
+        $result = match ($ext) {
+            'jpg', 'jpeg' => \imagejpeg($dst, $destPath, 85),
+            'png'         => \imagepng($dst, $destPath, 8),
+            'gif'         => \imagegif($dst, $destPath),
+            'webp'        => \imagewebp($dst, $destPath, 85),
+            default       => false,
+        };
+
+        return (bool) $result;
     }
 }

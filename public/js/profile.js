@@ -6,33 +6,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewControls = document.getElementById('preview-controls');
     const clearBtn        = document.getElementById('clear-preview-btn');
 
+    function showPreview(url) {
+        if (avatarImg) {
+            avatarImg.src = url;
+            avatarImg.style.display = 'block';
+        }
+        if (placeholder)     placeholder.style.display = 'none';
+        if (addControls)     addControls.style.display = 'none';
+        if (previewControls) previewControls.style.display = 'block';
+    }
+
+    function clearPreview() {
+        fileInput.value = '';
+        if (avatarImg) {
+            URL.revokeObjectURL(avatarImg.src);
+            avatarImg.src = '';
+            avatarImg.style.display = 'none';
+        }
+        if (placeholder)     placeholder.style.display = '';
+        if (addControls)     addControls.style.display = '';
+        if (previewControls) previewControls.style.display = 'none';
+    }
+
     if (fileInput) {
         fileInput.addEventListener('change', () => {
             const file = fileInput.files[0];
             if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = e => {
-                if (avatarImg) {
-                    avatarImg.src = e.target.result;
-                    avatarImg.classList.remove('hidden');
-                }
-                if (placeholder)     placeholder.classList.add('hidden');
-                if (addControls)     addControls.classList.add('hidden');
-                if (previewControls) previewControls.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
+            showPreview(URL.createObjectURL(file));
         });
     }
 
     if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
-            fileInput.value = '';
-            if (avatarImg)       { avatarImg.src = ''; avatarImg.classList.add('hidden'); }
-            if (placeholder)     placeholder.classList.remove('hidden');
-            if (addControls)     addControls.classList.remove('hidden');
-            if (previewControls) previewControls.classList.add('hidden');
-        });
+        clearBtn.addEventListener('click', clearPreview);
     }
 
     const removeBtn     = document.getElementById('remove-avatar-btn');
