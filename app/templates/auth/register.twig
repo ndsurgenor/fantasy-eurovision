@@ -4,7 +4,7 @@
 
 {% block content %}
     <div class="max-w-md mx-auto">
-        <h1 class="text-3xl text-white mt-4 mb-8 text-center tracking-tight">Create Account</h1>
+        <h1 class="text-3xl mt-4 mb-8 text-center tracking-tight">Create Account</h1>
 
         {% if errors is defined and errors %}
             <div class="bg-rose-500/20 border border-rose-500/40 rounded-lg px-4 py-3 mb-6">
@@ -16,7 +16,7 @@
 
         <form method="POST" action="/register" class="bg-stage-900 rounded-xl p-6 space-y-5 border border-white/10">
             <div>
-                <label for="name" class="block text-sm font-medium text-white/70 mb-1">Display Name</label>
+                <label for="name" class="block text-sm font-medium text-white/85 mb-1">Display Name</label>
                 <input type="text" id="name" name="name"
                        value="{{ name ?? '' }}"
                        required autocomplete="nickname"
@@ -24,7 +24,7 @@
             </div>
 
             <div>
-                <label for="email" class="block text-sm font-medium text-white/70 mb-1">Email</label>
+                <label for="email" class="block text-sm font-medium text-white/85 mb-1">Email</label>
                 <input type="email" id="email" name="email"
                        value="{{ email ?? '' }}"
                        required autocomplete="email"
@@ -32,7 +32,7 @@
             </div>
 
             <div>
-                <label for="password" class="block text-sm font-medium text-white/70 mb-1">Password</label>
+                <label for="password" class="block text-sm font-medium text-white/85 mb-1">Password</label>
                 <div class="relative">
                     <input type="password" id="password" name="password"
                            required autocomplete="new-password" minlength="8"
@@ -49,11 +49,11 @@
                         </svg>
                     </button>
                 </div>
-                <p class="text-white/30 text-xs mt-1">At least 8 characters</p>
+                <p class="text-white/70 text-xs mt-1">At least 8 characters</p>
             </div>
 
             <div>
-                <label for="password_confirm" class="block text-sm font-medium text-white/70 mb-1">Confirm Password</label>
+                <label for="password_confirm" class="block text-sm font-medium text-white/85 mb-1">Confirm Password</label>
                 <div class="relative">
                     <input type="password" id="password_confirm" name="password_confirm"
                            required autocomplete="new-password"
