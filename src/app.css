@@ -5,6 +5,7 @@
 @source "../public/js/**/*.js";
 
 @theme {
+  --breakpoint-xs: 425px;
   --color-stage-950: #08001e;
   --color-stage-900: #12003a;
   --color-stage-800: #1c0055;

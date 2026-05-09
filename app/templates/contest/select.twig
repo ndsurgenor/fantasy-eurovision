@@ -38,7 +38,7 @@
                 <span id="budget-spent" class="font-bold text-white tabular-nums inline-block w-14 text-right">€0.0m</span>
             </div>
             {# Remaining — always visible #}
-            <div class="flex items-baseline gap-1">
+            <div class="flex items-baseline gap-1 max-xs:w-full max-xs:justify-center">
                 <span class="text-white/85">Remaining:</span>
                 <span id="budget-remaining" class="font-bold text-emerald-400 tabular-nums inline-block w-12 text-right">€{{ contest.budget_limit|number_format(1) }}m</span>
             </div>
@@ -101,7 +101,7 @@
                                 <img src="/uploads/flags/{{ country.flag_image }}" alt="{{ country.name }}" class="h-auto w-auto flex-shrink-0 rounded-sm">
                             {% endif %}
                             <div class="flex-1 min-w-0 flex items-center justify-between gap-2">
-                                <div class="flex items-center gap-1 min-w-0">
+                                <div class="flex items-center gap-2 min-w-0">
                                     <p class="price-name font-medium text-white text-sm truncate min-w-0">{{ country.name }}</p>
                                     <span class="price-rank-icon hidden flex-shrink-0" data-group="{{ group.name }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
