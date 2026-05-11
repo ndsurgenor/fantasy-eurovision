@@ -225,7 +225,7 @@ class ContestController extends BaseController
 
         $contest = resolvePublicContest();
 
-        if (!$contest || !in_array($contest['status'], ['closed', 'finished'], true)) {
+        if (!$contest || !in_array($contest['status'], ['open', 'closed', 'finished'], true)) {
             $this->redirect('/');
             return;
         }

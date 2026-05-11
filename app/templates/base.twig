@@ -30,7 +30,7 @@
                            class="{% if current_path == '/my-team' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-fuchsia-400{% endif %} transition">
                             My Team
                         </a>
-                        {% if contest and contest.status in ['closed', 'finished'] %}
+                        {% if contest and contest.status in ['open', 'closed', 'finished'] %}
                             <a href="/leaderboard"
                                class="{% if current_path == '/leaderboard' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-fuchsia-400{% endif %} transition">
                                 Leaderboard
@@ -96,7 +96,7 @@
                        class="block px-2 py-2 rounded-lg {% if current_path == '/my-team' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-fuchsia-400 hover:bg-white/5{% endif %} transition">
                         My Team
                     </a>
-                    {% if contest and contest.status in ['closed', 'finished'] %}
+                    {% if contest and contest.status in ['open', 'closed', 'finished'] %}
                         <a href="/leaderboard"
                            class="block px-2 py-2 rounded-lg {% if current_path == '/leaderboard' %}text-fuchsia-400 font-semibold{% else %}text-white/85 hover:text-fuchsia-400 hover:bg-white/5{% endif %} transition">
                             Leaderboard

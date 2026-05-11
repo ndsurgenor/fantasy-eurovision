@@ -80,6 +80,8 @@
         <span>Total Spend: <strong class="text-white">€{{ entry.total_cost|number_format(1) }}m</strong></span>
         {% if is_finished %}
             <span>Total score: <strong class="text-emerald-400">{{ total_score }}</strong></span>
+        {% endif %}
+        {% if contest and contest.status in ['open', 'closed', 'finished'] %}
             <a href="/leaderboard" class="text-fuchsia-400 hover:text-fuchsia-300 hover:underline font-semibold">View Leaderboard →</a>
         {% endif %}
     </div>
