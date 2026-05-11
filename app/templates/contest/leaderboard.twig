@@ -39,10 +39,10 @@
                             {% endif %}
                         </td>
                         <td class="px-4 py-3 text-right text-white/85 hidden sm:table-cell">
-                            {{ is_open ? '€--.-m' : '€' ~ entry.total_cost|number_format(1) ~ 'm' }}
+                            {{ is_open ? '-' : '€' ~ entry.total_cost|number_format(1) ~ 'm' }}
                         </td>
                         {% if is_finished or is_open %}
-                            <td class="px-4 py-3 text-right font-bold text-emerald-400">{{ entry.total_score }}</td>
+                            <td class="px-4 py-3 text-right font-bold text-white/85">{{ is_open ? '-' : entry.total_score }}</td>
                         {% endif %}
                     </tr>
                 {% else %}
