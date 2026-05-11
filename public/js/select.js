@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const display    = section.querySelector(`[data-group-display="${gid}"]`);
 
             if (display) {
-                display.textContent = `${gCount}/${max}`;
+                display.textContent = `${gCount}`;
                 display.classList.remove('text-white', 'text-red-400', 'text-indigo-400');
                 if (gCount > max || (gCount === 0 && min > 0)) {
                     display.classList.add('text-red-400');
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function buildTwoColView(sorted, container, headingText) {
         const half    = Math.ceil(sorted.length / 2);
         const wrapper = document.createElement('div');
-        wrapper.className = 'grid grid-cols-1 min-[700px]:grid-cols-2 gap-4';
+        wrapper.className = 'grid grid-cols-1 min-[700px]:grid-cols-2 gap-4 mt-6';
 
         [sorted.slice(0, half), sorted.slice(half)].forEach(col => {
             const colDiv = document.createElement('div');
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const heading = document.createElement('h2');
-        heading.className = 'text-lg text-fuchsia-400 mb-3 text-center';
+        heading.className = 'text-2xl text-fuchsia-400 mb-3 text-center';
         heading.textContent = headingText;
 
         container.innerHTML = '';
@@ -180,7 +180,11 @@ document.addEventListener('DOMContentLoaded', () => {
         container.appendChild(wrapper);
     }
 
+    const submitWrapper = document.getElementById('submit-btn').closest('div');
+
     function setView(view) {
+        submitWrapper.classList.toggle('mt-16', view === 'groups');
+        submitWrapper.classList.toggle('mt-10', view !== 'groups');
         // Always restore labels to their original group containers first
         allLabels.forEach(label => labelParent.get(label).appendChild(label));
         form.querySelectorAll('.ro-number').forEach(el => el.classList.add('hidden'));
@@ -268,4 +272,34 @@ document.addEventListener('DOMContentLoaded', () => {
     viewGroupsBtn.addEventListener('click', () => setView('groups'));
     viewOrderBtn.addEventListener('click',  () => setView('order'));
     viewPriceBtn.addEventListener('click',  () => setView('price'));
+    setView('groups');
+
+    // Dialogs
+    const hasTeam      = form.dataset.hasTeam === '1';
+    const submitDialog = document.getElementById('confirm-submit-dialog');
+    const cancelBtn    = document.getElementById('cancel-btn');
+    const cancelDialog = document.getElementById('confirm-cancel-dialog');
+
+    if (hasTeam) {
+        document.getElementById('confirm-submit-title').textContent = 'Update My Team';
+        document.getElementById('confirm-submit-body').textContent  = 'Are you sure you want to update your team? Your previous selection will be replaced.';
+    }
+
+    submitBtn.addEventListener('click', () => {
+        if (!submitBtn.disabled) submitDialog.showModal();
+    });
+
+    document.getElementById('confirm-submit-cancel').addEventListener('click', () => submitDialog.close());
+    document.getElementById('confirm-submit-confirm').addEventListener('click', () => {
+        submitDialog.close();
+        form.submit();
+    });
+
+    submitDialog.addEventListener('click', e => { if (e.target === submitDialog) submitDialog.close(); });
+
+    if (cancelBtn && cancelDialog) {
+        cancelBtn.addEventListener('click', () => cancelDialog.showModal());
+        document.getElementById('confirm-cancel-cancel').addEventListener('click', () => cancelDialog.close());
+        cancelDialog.addEventListener('click', e => { if (e.target === cancelDialog) cancelDialog.close(); });
+    }
 });

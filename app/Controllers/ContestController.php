@@ -87,6 +87,7 @@ class ContestController extends BaseController
             'groups'             => $groups,
             'countries_by_group' => $countriesByGroup,
             'checked_ids'        => $checkedIds,
+            'has_existing_team'  => (bool) $entry,
             'errors'             => [],
         ]);
     }
@@ -126,6 +127,7 @@ class ContestController extends BaseController
                 'groups'             => $groups,
                 'countries_by_group' => $countriesByGroup,
                 'checked_ids'        => $checkedIds,
+                'has_existing_team'  => (bool) $existingEntry,
                 'errors'             => $errors,
             ]);
             return;
@@ -243,6 +245,7 @@ class ContestController extends BaseController
         $this->render('contest/leaderboard.twig', [
             'entries'         => $stmt->fetchAll(),
             'is_finished'     => $contest['status'] === 'finished',
+            'is_open'         => $contest['status'] === 'open',
             'current_user_id' => (int) $_SESSION['user_id'],
         ]);
     }

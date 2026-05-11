@@ -6,9 +6,9 @@
     <div class="flex flex-wrap items-center justify-between gap-4 mt-4 mb-6">
         <h1 class="text-3xl">My Team</h1>
         {% if is_open %}
-            <div class="flex flex-wrap items-center gap-3">
+            <div class="flex flex-wrap items-center gap-5">
                 {% if launch_date and launch_time %}
-                    <p class="text-sm text-white/85">Updates can be made up until <strong class="text-white">{{ launch_time|date('g:ia') }}</strong> on <strong class="text-white">{{ launch_date|date('l jS F Y') }}</strong></p>
+                    <p class="text-sm text-white/85">Changes can be made up until <strong class="text-white">{{ launch_time|date('g:ia') }}</strong> on <strong class="text-white">{{ launch_date|date('D jS F') }}</strong></p>
                 {% endif %}
                 <a href="/select" class="bg-gradient-to-r from-fuchsia-600 to-purple-700 hover:from-fuchsia-500 hover:to-purple-600 text-white font-bold py-2 px-6 rounded-lg transition text-sm">Update Team</a>
             </div>
@@ -76,14 +76,18 @@
         </table>
     </div>
 
-    <div class="flex flex-wrap justify-end gap-4 text-sm text-white/85 pr-4">
-        <span>Total Spend: <strong class="text-white">€{{ entry.total_cost|number_format(1) }}m</strong></span>
-        {% if is_finished %}
-            <span>Total score: <strong class="text-emerald-400">{{ total_score }}</strong></span>
-        {% endif %}
+    <div class="flex flex-wrap justify-between gap-4 text-sm text-white/85 px-4">
         {% if contest and contest.status in ['open', 'closed', 'finished'] %}
             <a href="/leaderboard" class="text-fuchsia-400 hover:text-fuchsia-300 hover:underline font-semibold">View Leaderboard →</a>
+        {% else %}
+            <span></span>
         {% endif %}
+        <div class="flex flex-wrap justify-end gap-4">
+            <span>Total Spend: <strong class="text-white">€{{ entry.total_cost|number_format(1) }}m</strong></span>
+            {% if is_finished %}
+                <span>Total score: <strong class="text-emerald-400">{{ total_score }}</strong></span>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}
 

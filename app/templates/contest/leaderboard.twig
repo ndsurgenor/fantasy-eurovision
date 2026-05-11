@@ -18,7 +18,7 @@
                     <th class="px-4 py-3 text-left w-10">#</th>
                     <th class="px-4 py-3 text-left">Player</th>
                     <th class="px-4 py-3 text-right hidden sm:table-cell">Cost</th>
-                    {% if is_finished %}
+                    {% if is_finished or is_open %}
                         <th class="px-4 py-3 text-right">Score</th>
                     {% endif %}
                 </tr>
@@ -39,9 +39,9 @@
                             {% endif %}
                         </td>
                         <td class="px-4 py-3 text-right text-white/85 hidden sm:table-cell">
-                            €{{ entry.total_cost|number_format(1) }}m
+                            {{ is_open ? '€--.-m' : '€' ~ entry.total_cost|number_format(1) ~ 'm' }}
                         </td>
-                        {% if is_finished %}
+                        {% if is_finished or is_open %}
                             <td class="px-4 py-3 text-right font-bold text-emerald-400">{{ entry.total_score }}</td>
                         {% endif %}
                     </tr>
