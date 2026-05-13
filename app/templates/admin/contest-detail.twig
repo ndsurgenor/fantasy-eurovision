@@ -86,15 +86,15 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label for="launch_date" class="block text-sm font-medium text-gray-700 mb-1">Launch Date</label>
+                        <label for="launch_date" class="block text-sm font-medium text-gray-700 mb-1">Closing Date</label>
                         <input type="date" id="launch_date" name="launch_date"
-                               value="{{ contest.launch_date ?? '' }}" required
+                               value="{{ contest.launch_date ?? '' }}"
                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                     </div>
                     <div>
-                        <label for="launch_time" class="block text-sm font-medium text-gray-700 mb-1">Launch Time</label>
+                        <label for="launch_time" class="block text-sm font-medium text-gray-700 mb-1">Closing Time</label>
                         <input type="time" id="launch_time" name="launch_time"
-                               value="{{ contest.launch_time ?? '' }}" required
+                               value="{{ contest.launch_time ?? '' }}"
                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                     </div>
                 </div>

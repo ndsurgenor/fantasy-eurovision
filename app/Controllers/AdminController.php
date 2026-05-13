@@ -281,8 +281,6 @@ class AdminController extends BaseController
         if (!$name)                                    $errors[] = 'Contest name is required.';
         if ($budget <= 0)                              $errors[] = 'Budget must be greater than zero.';
         if (!in_array($status, $validStatuses, true))  $errors[] = 'Invalid status.';
-        if (!$launchDate)                              $errors[] = 'Launch date is required.';
-        if (!$launchTime)                              $errors[] = 'Launch time is required.';
 
         if (!empty($errors)) {
             $this->flash('error', implode(' ', $errors));
